@@ -4,13 +4,15 @@
   functions = "netlify/functions"
 
 [build.environment]
-  NODE_VERSION = "14"
   SMTP_HOST = "${SMTP_HOST}"
+  SMTP_PORT = "${SMTP_PORT}"
+  SMTP_SECURE = "${SMTP_SECURE}"
+  SMTP_USER = "${SMTP_USER}"
+  SMTP_PASS = "${SMTP_PASS}"
 
 [forms]
   booking = "booking"
   bookingConfirmation = "netlify/functions/bookingConfirmation.ts"
-  SMTP_PASS = "${SMTP_PASS}"
 
 [[redirects]]
   from = "/*"

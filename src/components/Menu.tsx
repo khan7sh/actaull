@@ -2,9 +2,14 @@ import React from 'react'
 import { Utensils } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
+// Import the images
+import mixedGrillImage from '../assets/Mixed_grill.jpg'
+import mantuImage from '../assets/Mantu.jpg'
+import lambChopsImage from '../assets/Lamb_Chops.jpg'
+
 const MenuItem: React.FC<{ title: string; description: string; price: string; imageUrl: string }> = ({ title, description, price, imageUrl }) => (
   <div className="card menu-item" data-aos="fade-up">
-    <img src={imageUrl} alt={title} className="w-full h-48 object-cover rounded-t-lg" loading="lazy" />
+    <img src={imageUrl} alt={title} className="w-full h-48 object-cover rounded-t-lg" />
     <div className="card-body">
       <h4 className="text-lg font-semibold mb-2">{title}</h4>
       <p className="text-sm text-gray-600 mb-2">{description}</p>
@@ -25,19 +30,19 @@ const Menu: React.FC = () => {
             title="Mixed Grill"
             description="A delicious assortment of grilled meats including lamb, chicken, and beef kebabs"
             price="£16.99"
-            imageUrl="/src/assets/Mixed_grill.jpg"
+            imageUrl={mixedGrillImage}
           />
           <MenuItem 
             title="Mantu"
             description="Steamed dumplings filled with seasoned ground beef and onions, topped with yogurt and lentil sauce"
             price="£12.99"
-            imageUrl="/src/assets/Mantu.jpg"
+            imageUrl={mantuImage}
           />
           <MenuItem 
             title="Lamb Chops"
             description="Tender, marinated lamb chops grilled to perfection and served with Afghan-style rice"
             price="£18.99"
-            imageUrl="/src/assets/Lamb_Chops.jpg"
+            imageUrl={lambChopsImage}
           />
         </div>
         <div className="text-center">

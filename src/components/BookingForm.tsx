@@ -144,9 +144,7 @@ const BookingForm: React.FC = () => {
           id="specialRequests"
           {...register("specialRequests")}
           className="block w-full px-4 py-3 rounded-md border-gray-300 shadow-sm focus:border-burgundy focus:ring focus:ring-burgundy focus:ring-opacity-50 transition duration-150 ease-in-out"
-          rows={6}
-          placeholder="Any special requests, dietary requirements, or additional information?"
-        ></textarea>
+        />
       </div>
 
       <button 

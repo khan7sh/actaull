@@ -14,23 +14,24 @@ const MenuPage: React.FC = () => {
           <ArrowLeft className="mr-2" size={20} />
           Back to Home
         </Link>
-        <h1 className="text-4xl md:text-5xl font-bold text-burgundy mb-4 text-center">Our Menu</h1>
-        <p className="text-lg md:text-xl text-gray-600 mb-8 text-center">Discover our delightful selection of coffee and treats</p>
+        <h1 className="text-5xl font-bold text-burgundy mb-4 text-center">Our Menu</h1>
+        <p className="text-xl text-gray-600 mb-8 text-center">Discover our delightful selection of coffee and treats</p>
         
         <div className="w-full aspect-[1/1.414] mb-8 rounded-lg overflow-hidden shadow-xl">
-          <img 
-            src="/src/assets/menu-thumbnail.jpg" 
-            alt="Menu Thumbnail" 
-            className="w-full h-full object-cover cursor-pointer"
-            onClick={() => window.open('/src/assets/menu.pdf', '_blank')}
-          />
+          <iframe 
+            src="/menu.pdf" 
+            className="w-full h-full border-none"
+            title="Kenza Coffee Menu"
+          >
+            This browser does not support PDFs. Please download the PDF to view it.
+          </iframe>
         </div>
         
-        <div className="flex flex-col md:flex-row justify-center space-y-4 md:space-y-0 md:space-x-4 mb-12">
+        <div className="flex justify-center space-x-4 mb-12">
           <a 
             href="/menu.pdf" 
             download 
-            className="btn btn-primary w-full md:w-auto"
+            className="inline-flex items-center bg-burgundy text-white py-3 px-6 rounded-full hover:bg-green transition-colors shadow-md"
           >
             <Download className="mr-2" size={20} />
             Download Menu
@@ -39,7 +40,7 @@ const MenuPage: React.FC = () => {
             href="https://noshe-orders.pharmix.co.uk/" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="btn btn-secondary w-full md:w-auto"
+            className="inline-flex items-center bg-green text-white py-3 px-6 rounded-full hover:bg-burgundy transition-colors shadow-md"
           >
             <ShoppingBag className="mr-2" size={20} />
             Order Online
