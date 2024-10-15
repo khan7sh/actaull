@@ -249,3 +249,10 @@ html, body {
     transform-origin: top left;
   }
 }
+
+@media (min-width: 1024px) {
+  .menu-pdf-container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+}
