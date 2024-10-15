@@ -11,10 +11,7 @@ const Header: React.FC = () => {
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
 
   const scrollToSection = (id: string) => {
-    if (id === 'booking') {
-      navigate('/booking');
-      setIsMenuOpen(false);
-    } else if (location.pathname !== '/') {
+    if (location.pathname !== '/') {
       window.location.href = `/#${id}`;
     } else {
       const element = document.getElementById(id);

@@ -1,25 +1,28 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Download, ShoppingBag } from 'lucide-react';
+import AOS from 'aos';
+import menuPDF from '../assets/menu.pdf';
 
 const MenuPage: React.FC = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
+    AOS.refresh(); // Refresh AOS
   }, []);
 
   return (
     <div className="min-h-screen bg-cream py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
-        <Link to="/" className="inline-flex items-center text-burgundy hover:text-green transition-colors mb-8">
+        <Link to="/" className="inline-flex items-center text-burgundy hover:text-green transition-colors mb-8" data-aos="fade-right">
           <ArrowLeft className="mr-2" size={20} />
           Back to Home
         </Link>
-        <h1 className="text-5xl font-bold text-burgundy mb-4 text-center">Our Menu</h1>
-        <p className="text-xl text-gray-600 mb-8 text-center">Discover our delightful selection of coffee and treats</p>
+        <h1 className="text-5xl font-bold text-burgundy mb-4 text-center" data-aos="fade-down">Our Menu</h1>
+        <p className="text-xl text-gray-600 mb-8 text-center" data-aos="fade-up" data-aos-delay="200">Discover our delightful selection of coffee and treats</p>
         
-        <div className="w-full aspect-[1/1.414] mb-8 rounded-lg overflow-hidden shadow-xl">
+        <div className="w-full aspect-[1/1.414] mb-8 rounded-lg overflow-hidden shadow-xl" data-aos="zoom-in" data-aos-delay="400">
           <iframe 
-            src="/menu.pdf" 
+            src={menuPDF}
             className="w-full h-full border-none"
             title="Kenza Coffee Menu"
           >
@@ -27,9 +30,9 @@ const MenuPage: React.FC = () => {
           </iframe>
         </div>
         
-        <div className="flex justify-center space-x-4 mb-12">
+        <div className="flex justify-center space-x-4 mb-12" data-aos="fade-up" data-aos-delay="600">
           <a 
-            href="/menu.pdf" 
+            href={menuPDF}
             download 
             className="inline-flex items-center bg-burgundy text-white py-3 px-6 rounded-full hover:bg-green transition-colors shadow-md"
           >

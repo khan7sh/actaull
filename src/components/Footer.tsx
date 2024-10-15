@@ -11,15 +11,15 @@ const Footer: React.FC = () => {
           <ul className="space-y-2 text-base">
             <li className="flex items-center">
               <MapPin className="mr-2 flex-shrink-0" size={18} />
-              <span>123 Mill Road, Cambridge, CB1 2AZ</span>
+              <span>18 Mill Road, Cambridge, CB1 2AD</span>
             </li>
             <li className="flex items-center">
               <Phone className="mr-2 flex-shrink-0" size={18} />
-              <span>+44 (0)1223 123456</span>
+              <span>07964 624055</span>
             </li>
             <li className="flex items-center">
               <Mail className="mr-2 flex-shrink-0" size={18} />
-              <span>info@noshecambridge.co.uk</span>
+              <span>Noshecambridge@gmail.com</span>
             </li>
           </ul>
         </div>

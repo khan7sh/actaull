@@ -7,6 +7,7 @@ const Booking: React.FC = () => {
 
   const handleBookTableClick = () => {
     navigate('/booking');
+    window.scrollTo(0, 0);
   };
 
   return (
@@ -19,7 +20,7 @@ const Booking: React.FC = () => {
           <div className="flex items-center text-xl">
             <Phone className="mr-2" size={24} />
             <span>or call: </span>
-            <a href="tel:0764624055" className="ml-1 font-bold hover:underline transition-colors duration-300">0764 624 055</a>
+            <a href="tel:07964624055" className="ml-1 font-bold hover:underline transition-colors duration-300">07964 624055</a>
           </div>
         </div>
       </div>

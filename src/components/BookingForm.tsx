@@ -143,7 +143,8 @@ const BookingForm: React.FC = () => {
         <textarea
           id="specialRequests"
           {...register("specialRequests")}
-          className="block w-full px-4 py-3 rounded-md border-gray-300 shadow-sm focus:border-burgundy focus:ring focus:ring-burgundy focus:ring-opacity-50 transition duration-150 ease-in-out"
+          rows={5}
+          className="block w-full px-4 py-3 rounded-md border-gray-300 shadow-sm focus:border-burgundy focus:ring focus:ring-burgundy focus:ring-opacity-50 transition duration-150 ease-in-out h-32"
         />
       </div>
 
