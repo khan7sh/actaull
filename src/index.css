@@ -214,3 +214,10 @@ html, body {
     @apply text-base py-2 px-4;
   }
 }
+
+@media (max-width: 768px) {
+  .menu-pdf-container iframe {
+    transform: scale(0.75);
+    transform-origin: top left;
+  }
+}
