@@ -41,7 +41,7 @@ const Header: React.FC = () => {
   ]
 
   return (
-    <header className={`fixed w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-burgundy shadow-md py-2' : 'bg-transparent py-4'}`}>
+    <header className={`fixed w-full z-50 transition-all duration-300 ${isScrolled || isMenuOpen ? 'bg-burgundy shadow-md py-2' : 'bg-transparent py-4'}`}>
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center">
           <Link to="/" className="flex items-center">
@@ -52,7 +52,7 @@ const Header: React.FC = () => {
               <button
                 key={item.id}
                 onClick={() => scrollToSection(item.id)}
-                className="text-cream hover:text-beige transition-colors duration-300 font-medium text-lg"
+                className="text-cream hover:text-beige transition-colors duration-300 font-medium text-lg whitespace-nowrap"
               >
                 {item.name}
               </button>
@@ -62,7 +62,7 @@ const Header: React.FC = () => {
                 scrollToSection('booking');
                 setIsMenuOpen(false);
               }}
-              className="btn btn-primary w-full text-left text-cream hover:bg-opacity-90 transition-colors duration-300 py-2 font-medium text-lg mt-2 rounded-md"
+              className="btn btn-primary text-cream hover:bg-opacity-90 transition-colors duration-300 py-2 font-medium text-lg rounded-md whitespace-nowrap"
             >
               Book a Table
             </button>
