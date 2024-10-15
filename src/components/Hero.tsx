@@ -42,7 +42,7 @@ const Hero: React.FC = () => {
           </div>
         </div>
         <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4" data-aos="fade-up" data-aos-delay="400">
-          <Link to="/booking" className="btn btn-primary w-full sm:w-auto">Book a Table</Link>
+          <button onClick={() => scrollToBooking()} className="btn btn-primary w-full sm:w-auto">Book a Table</button>
           <a href="https://noshe-orders.pharmix.co.uk/" target="_blank" rel="noopener noreferrer" className="btn btn-secondary w-full sm:w-auto">Order Online</a>
         </div>
       </div>

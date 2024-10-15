@@ -57,12 +57,15 @@ const Header: React.FC = () => {
                 {item.name}
               </button>
             ))}
-            <Link
-              to="/booking"
-              className="btn btn-primary text-cream hover:bg-opacity-90 transition-colors duration-300 font-medium text-lg px-4 py-2 rounded-md"
+            <button
+              onClick={() => {
+                scrollToSection('booking');
+                setIsMenuOpen(false);
+              }}
+              className="btn btn-primary w-full text-left text-cream hover:bg-opacity-90 transition-colors duration-300 py-2 font-medium text-lg mt-2 rounded-md"
             >
               Book a Table
-            </Link>
+            </button>
           </nav>
           <button className="lg:hidden text-cream" onClick={toggleMenu}>
             {isMenuOpen ? <X size={28} /> : <MenuIcon size={28} />}
