@@ -45,7 +45,7 @@ const Header: React.FC = () => {
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center">
           <Link to="/" className="flex items-center">
-            <span className="font-serif text-2xl md:text-3xl font-bold text-cream">Noshe Cambridge</span>
+            <span className="font-serif text-xl md:text-3xl font-bold text-cream">Noshe Cambridge</span>
           </Link>
           <nav className="hidden lg:flex items-center space-x-6">
             {navItems.map((item) => (
@@ -58,39 +58,38 @@ const Header: React.FC = () => {
               </button>
             ))}
             <button
-              onClick={() => {
-                scrollToSection('booking');
-                setIsMenuOpen(false);
-              }}
+              onClick={() => scrollToSection('booking')}
               className="btn btn-primary text-cream hover:bg-opacity-90 transition-colors duration-300 py-2 font-medium text-lg rounded-md whitespace-nowrap"
             >
               Book a Table
             </button>
           </nav>
           <button className="lg:hidden text-cream" onClick={toggleMenu}>
-            {isMenuOpen ? <X size={28} /> : <MenuIcon size={28} />}
+            {isMenuOpen ? <X size={24} /> : <MenuIcon size={24} />}
           </button>
         </div>
       </div>
       {isMenuOpen && (
         <div className="lg:hidden bg-burgundy">
-          <nav className="container mx-auto px-4 py-4">
+          <nav className="container mx-auto px-4 py-4 flex flex-col space-y-4">
             {navItems.map((item) => (
               <button
                 key={item.id}
                 onClick={() => scrollToSection(item.id)}
-                className="block w-full text-left text-cream hover:text-beige transition-colors duration-300 py-2 font-medium text-lg"
+                className="text-cream hover:text-beige transition-colors duration-300 font-medium text-lg"
               >
                 {item.name}
               </button>
             ))}
-            <Link
-              to="/booking"
-              className="btn btn-primary w-full text-left text-cream hover:bg-opacity-90 transition-colors duration-300 py-2 font-medium text-lg mt-2 rounded-md"
-              onClick={() => setIsMenuOpen(false)}
+            <button
+              onClick={() => {
+                scrollToSection('booking');
+                setIsMenuOpen(false);
+              }}
+              className="btn btn-primary text-cream hover:bg-opacity-90 transition-colors duration-300 py-2 font-medium text-lg rounded-md"
             >
               Book a Table
-            </Link>
+            </button>
           </nav>
         </div>
       )}

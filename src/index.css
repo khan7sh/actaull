@@ -195,3 +195,22 @@ section {
     margin: 0.2rem;
   }
 }
+
+/* Prevent horizontal scrolling on mobile */
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+/* Adjust container padding for mobile */
+.container {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+/* Adjust button sizes for mobile */
+@media (max-width: 640px) {
+  .btn {
+    @apply text-base py-2 px-4;
+  }
+}
