@@ -20,21 +20,23 @@ const MenuPage: React.FC = () => {
         <h1 className="text-5xl font-bold text-burgundy mb-4 text-center" data-aos="fade-down">Our Menu</h1>
         <p className="text-xl text-gray-600 mb-8 text-center" data-aos="fade-up" data-aos-delay="200">Discover our delightful selection of coffee and treats</p>
         
-        <div className="w-full aspect-[1/1.414] mb-8 rounded-lg overflow-hidden shadow-xl" data-aos="zoom-in" data-aos-delay="400">
-          <iframe 
-            src={menuPDF}
-            className="w-full h-full border-none"
-            title="Kenza Coffee Menu"
-          >
-            This browser does not support PDFs. Please download the PDF to view it.
-          </iframe>
+        <div className="w-full mb-8 rounded-lg overflow-hidden shadow-xl" data-aos="zoom-in" data-aos-delay="400">
+          <div className="relative" style={{ paddingTop: '141.4%' }}>
+            <iframe 
+              src={menuPDF}
+              className="absolute top-0 left-0 w-full h-full border-none"
+              title="Kenza Coffee Menu"
+            >
+              This browser does not support PDFs. Please download the PDF to view it.
+            </iframe>
+          </div>
         </div>
         
-        <div className="flex justify-center space-x-4 mb-12" data-aos="fade-up" data-aos-delay="600">
+        <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4 mb-12" data-aos="fade-up" data-aos-delay="600">
           <a 
             href={menuPDF}
             download 
-            className="inline-flex items-center bg-burgundy text-white py-3 px-6 rounded-full hover:bg-green transition-colors shadow-md"
+            className="inline-flex items-center justify-center bg-burgundy text-white py-3 px-6 rounded-full hover:bg-green transition-colors shadow-md w-full sm:w-auto"
           >
             <Download className="mr-2" size={20} />
             Download Menu
@@ -43,7 +45,7 @@ const MenuPage: React.FC = () => {
             href="https://noshe-orders.pharmix.co.uk/" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="inline-flex items-center bg-green text-white py-3 px-6 rounded-full hover:bg-burgundy transition-colors shadow-md"
+            className="inline-flex items-center justify-center bg-green text-white py-3 px-6 rounded-full hover:bg-burgundy transition-colors shadow-md w-full sm:w-auto"
           >
             <ShoppingBag className="mr-2" size={20} />
             Order Online
