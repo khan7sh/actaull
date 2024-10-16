@@ -18,6 +18,8 @@ const handler: Handler = async (event) => {
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
 
+    console.log('Querying bookings for date range:', startOfDay, 'to', endOfDay);
+
     const result: any = await client.query(
       q.Map(
         q.Paginate(
@@ -30,6 +32,8 @@ const handler: Handler = async (event) => {
         q.Lambda('booking', q.Get(q.Var('booking')))
       )
     );
+
+    console.log('Query result:', result);
 
     const bookings = result.data.map((booking: any) => booking.data);
     console.log('Fetched bookings:', bookings);
