@@ -1,6 +1,7 @@
 import { Handler } from '@netlify/functions';
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
+import faunadb from 'faunadb';
 dotenv.config();
 
 const transporter = nodemailer.createTransport({
@@ -11,6 +12,11 @@ const transporter = nodemailer.createTransport({
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
   },
+});
+
+const q = faunadb.query;
+const client = new faunadb.Client({
+  secret: process.env.FAUNADB_SECRET!,
 });
 
 const handler: Handler = async (event) => {
@@ -55,7 +61,6 @@ const handler: Handler = async (event) => {
         </div>
       `,
     };
-
     const formattedDate = new Date(date).toLocaleDateString('en-GB', {
       year: 'numeric',
       month: 'long',
@@ -84,7 +89,6 @@ const handler: Handler = async (event) => {
         </div>
       `,
     };
-
     console.log('Sending customer email');
     await transporter.sendMail(customerEmail);
     console.log('Customer email sent');
@@ -92,6 +96,24 @@ const handler: Handler = async (event) => {
     console.log('Sending manager email');
     await transporter.sendMail(managerEmail);
     console.log('Manager email sent');
+
+    // Store booking in FaunaDB
+    const bookingData = {
+      name,
+      email,
+      phone,
+      date: new Date(date),
+      time,
+      guests: parseInt(guests),
+      specialRequests,
+    };
+
+    await client.query(
+      q.Create(
+        q.Collection('bookings'),
+        { data: bookingData }
+      )
+    );
 
     return {
       statusCode: 200,
