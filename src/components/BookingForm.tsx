@@ -15,17 +15,18 @@ const BookingForm: React.FC = () => {
     setSubmitMessage('');
     try {
       const response = await axios.post('/.netlify/functions/bookingConfirmation', data);
-      console.log('Response:', response.data); // Add this line for debugging
+      console.log('Response:', response.data);
       if (response.data.success) {
         setSubmitMessage('Booking confirmed! Check your email for details.');
       } else {
-        setSubmitMessage(response.data.message || 'There was an error processing your booking. Please try again.');
+        throw new Error(response.data.message || 'Unknown error occurred');
       }
     } catch (error) {
       console.error('Booking error:', error);
       setSubmitMessage('There was an error processing your booking. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
-    setIsSubmitting(false);
   };
 
   const isWeekday = (date: Date) => {

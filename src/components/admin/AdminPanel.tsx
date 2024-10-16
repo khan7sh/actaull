@@ -31,12 +31,16 @@ const AdminPanel: React.FC = () => {
     try {
       const response = await fetch('/.netlify/functions/getBookings', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({ date: date.toISOString() }),
       });
       if (!response.ok) {
         throw new Error('Failed to fetch bookings');
       }
       const data = await response.json();
+      console.log('Fetched bookings:', data.bookings);
       setBookings(data.bookings);
     } catch (err) {
       setError('Error fetching bookings. Please try again.');

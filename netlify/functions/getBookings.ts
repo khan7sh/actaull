@@ -32,6 +32,7 @@ const handler: Handler = async (event) => {
     );
 
     const bookings = result.data.map((booking: any) => booking.data);
+    console.log('Fetched bookings:', bookings);
 
     return {
       statusCode: 200,
