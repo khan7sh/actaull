@@ -54,7 +54,7 @@ Noshe Cambridge Team`,
 
     const managerEmail = {
       from: '"Noshe Cambridge Bookings" <bookings@noshecambridge.co.uk>',
-      to: 'khan7akh@gmail.com',
+      to: 'noshecambridge@gmail.com',
       subject: 'New Booking - Noshe Cambridge',
       text: `A new booking has been made:
 
