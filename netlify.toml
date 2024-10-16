@@ -9,7 +9,7 @@
   SMTP_SECURE = "${SMTP_SECURE}"
   SMTP_USER = "${SMTP_USER}"
   SMTP_PASS = "${SMTP_PASS}"
-  FAUNADB_SECRET = "fnAFt4RlmLAAzycIjr9XMY7LbDhbNS-iUhRhnYd7"
+  FAUNADB_SECRET = "${FAUNADB_SECRET}"
 
 [forms]
   booking = "booking"
