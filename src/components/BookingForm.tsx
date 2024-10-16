@@ -23,7 +23,12 @@ const BookingForm: React.FC = () => {
       }
     } catch (error) {
       console.error('Booking error:', error);
-      setSubmitMessage('There was an error processing your booking. Please try again.');
+      if (axios.isAxiosError(error) && error.response) {
+        console.error('Error response:', error.response.data);
+        setSubmitMessage(error.response.data.message || 'There was an error processing your booking. Please try again.');
+      } else {
+        setSubmitMessage('There was an error processing your booking. Please try again.');
+      }
     } finally {
       setIsSubmitting(false);
     }
