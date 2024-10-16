@@ -42,8 +42,17 @@ const BookingPage: React.FC = () => {
                     <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
                     Perfect for special occasions
                   </li>
+                  <li className="flex items-center">
+                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                    Traditional majlis-style floor seating available
+                  </li>
                 </ul>
                 <div className="mt-4 p-4 bg-cream bg-opacity-20 rounded-lg border-2 border-cream border-opacity-30 text-sm" data-aos="fade-up" data-aos-delay="600">
+                  <h3 className="text-xl font-semibold mb-2">Majlis-Style Seating</h3>
+                  <p className="mb-2">Experience authentic Afghan dining with our traditional floor seating option. Perfect for groups and special occasions.</p>
+                  <p className="font-bold">To request majlis-style seating, please mention it in the Special Requests field when booking.</p>
+                </div>
+                <div className="mt-4 p-4 bg-cream bg-opacity-20 rounded-lg border-2 border-cream border-opacity-30 text-sm" data-aos="fade-up" data-aos-delay="700">
                   <h3 className="text-xl font-semibold mb-2">Opening Hours</h3>
                   <p className="mb-1">Tuesday - Sunday: 8:00 AM - 10:00 PM</p>
                   <p className="font-bold">Closed on Mondays</p>
