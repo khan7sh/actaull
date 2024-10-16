@@ -12,7 +12,7 @@ const KenzaCoffee: React.FC = () => {
               Kenza Coffee
             </h2>
             <p className="mb-4 text-gray-700">
-              At Noshe, we take pride in our house-roasted coffee, Kenza. Our master roasters carefully select the finest beans from around the world, with a focus on Afghan and neighboring regions' varieties.
+              At Noshe, we take pride in our house roasted coffee, Kenza. Our master roasters carefully select the finest beans from around the world, with a focus on Afghan and neighboring regions' varieties.
             </p>
             <p className="mb-4 text-gray-700">
               Each batch is roasted to perfection, bringing out the unique flavors and aromas that make Kenza Coffee a true delight for coffee enthusiasts.
