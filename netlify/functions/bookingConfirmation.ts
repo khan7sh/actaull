@@ -56,6 +56,12 @@ const handler: Handler = async (event) => {
       `,
     };
 
+    const formattedDate = new Date(date).toLocaleDateString('en-GB', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+
     const managerEmail = {
       from: '"Noshe Cambridge Bookings" <bookings@noshecambridge.co.uk>',
       to: 'noshecambridge@gmail.com',
@@ -69,7 +75,7 @@ const handler: Handler = async (event) => {
             <p><strong>Name:</strong> ${name}</p>
             <p><strong>Email:</strong> ${email}</p>
             <p><strong>Phone:</strong> ${phone}</p>
-            <p><strong>Date:</strong> ${date}</p>
+            <p><strong>Date:</strong> ${formattedDate}</p>
             <p><strong>Time:</strong> ${time}</p>
             <p><strong>Number of guests:</strong> ${guests}</p>
             ${specialRequests ? `<p><strong>Special Requests:</strong> ${specialRequests}</p>` : ''}
