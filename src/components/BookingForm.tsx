@@ -16,18 +16,18 @@ const BookingForm: React.FC = () => {
     try {
       const response = await axios.post('/.netlify/functions/bookingConfirmation', data);
       console.log('Full response:', response);
-      if (response.data.success) {
+      if (response.data && response.data.success) {
         console.log('Setting success message');
         setSubmitMessage('Booking confirmed! Check your email for details.');
       } else {
-        console.log('Throwing error due to unsuccessful response');
-        throw new Error(response.data.message || 'Unknown error occurred');
+        console.log('Unsuccessful response:', response.data);
+        setSubmitMessage(response.data?.message || 'There was an error processing your booking. Please try again.');
       }
     } catch (error) {
       console.error('Booking error:', error);
       if (axios.isAxiosError(error) && error.response) {
         console.error('Error response:', error.response.data);
-        setSubmitMessage(error.response.data.message || 'There was an error processing your booking. Please try again.');
+        setSubmitMessage(error.response.data?.message || 'There was an error processing your booking. Please try again.');
       } else {
         setSubmitMessage('There was an error processing your booking. Please try again.');
       }

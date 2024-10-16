@@ -29,12 +29,13 @@ const AdminPanel: React.FC = () => {
     setIsLoading(true);
     setError(null);
     try {
+      const formattedDate = date.toISOString().split('T')[0]; // Format date as YYYY-MM-DD
       const response = await fetch('/.netlify/functions/getBookings', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ date: date.toISOString() }),
+        body: JSON.stringify({ date: formattedDate }),
       });
       if (!response.ok) {
         throw new Error('Failed to fetch bookings');
