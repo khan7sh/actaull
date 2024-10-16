@@ -11,7 +11,9 @@ const Header: React.FC = () => {
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
 
   const scrollToSection = (id: string) => {
-    if (location.pathname !== '/') {
+    if (id === 'booking') {
+      navigate('/booking');
+    } else if (location.pathname !== '/') {
       window.location.href = `/#${id}`;
     } else {
       const element = document.getElementById(id);
@@ -55,8 +57,11 @@ const Header: React.FC = () => {
               </button>
             ))}
             <button
-              onClick={() => scrollToSection('booking')}
-              className="btn btn-primary text-cream hover:bg-opacity-90 transition-colors duration-300 py-2 font-medium text-lg rounded-md whitespace-nowrap"
+              onClick={() => {
+                navigate('/booking');
+                setIsMenuOpen(false);
+              }}
+              className="btn btn-primary text-cream hover:bg-opacity-90 transition-colors duration-300 py-2 font-medium text-lg rounded-md"
             >
               Book a Table
             </button>
