@@ -115,6 +115,7 @@ const handler: Handler = async (event) => {
       )
     );
 
+    console.log('Sending success response:', { success: true, message: 'Booking confirmed successfully!' });
     return {
       statusCode: 200,
       headers: {
