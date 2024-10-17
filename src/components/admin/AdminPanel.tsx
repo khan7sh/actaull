@@ -3,7 +3,7 @@ import { Calendar, BarChart2, LogOut, Menu } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
-import { startOfWeek, endOfWeek, eachDayOfInterval, format } from 'date-fns';
+import { startOfWeek, endOfWeek, addDays, format } from 'date-fns';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -12,7 +12,7 @@ const AdminPanel: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'bookings' | 'reportdata'>('bookings');
   const navigate = useNavigate();
-  const [selectedWeek, setSelectedWeek] = useState<Date>(new Date());
+  const [selectedWeek, setSelectedWeek] = useState<Date>(startOfWeek(new Date(), { weekStartsOn: 2 }));
   const [weeklyBookings, setWeeklyBookings] = useState<number[]>([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -70,7 +70,7 @@ const AdminPanel: React.FC = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const start = startOfWeek(date, { weekStartsOn: 2 }); // Tuesday as start of week
+      const start = startOfWeek(date, { weekStartsOn: 2 });
       const end = endOfWeek(date, { weekStartsOn: 2 });
       const response = await fetch('/.netlify/functions/getWeeklyBookings', {
         method: 'POST',
@@ -86,7 +86,7 @@ const AdminPanel: React.FC = () => {
       setWeeklyBookings(data.bookings);
     } catch (err) {
       console.error('Error fetching weekly bookings:', err);
-      setError(`Error fetching weekly bookings: ${err.message}`);
+      setError(`Error fetching weekly bookings: ${err instanceof Error ? err.message : String(err)}`);
     } finally {
       setIsLoading(false);
     }
@@ -97,6 +97,19 @@ const AdminPanel: React.FC = () => {
       fetchWeeklyBookings(selectedWeek);
     }
   }, [activeTab, selectedWeek]);
+
+  const handleWeekChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const [year, week] = e.target.value.split('-W');
+    const date = new Date(parseInt(year), 0, 1 + (parseInt(week) - 1) * 7);
+    const weekStart = startOfWeek(date, { weekStartsOn: 2 });
+    setSelectedWeek(weekStart);
+  };
+
+  const formatWeekRange = (date: Date) => {
+    const start = startOfWeek(date, { weekStartsOn: 2 });
+    const end = endOfWeek(date, { weekStartsOn: 2 });
+    return `${format(start, 'MMM d, yyyy')} - ${format(end, 'MMM d, yyyy')}`;
+  };
 
   return (
     <div className="flex flex-col md:flex-row h-screen bg-cream">
@@ -167,7 +180,6 @@ const AdminPanel: React.FC = () => {
               </button>
               {error && <p className="text-red-600 mt-4 text-sm">{error}</p>}
             </div>
-            {/* Add more booking-related components here */}
           </div>
         )}
 
@@ -179,12 +191,13 @@ const AdminPanel: React.FC = () => {
               <div className="mb-4">
                 <label htmlFor="weekSelect" className="block text-sm font-medium text-gray-700 mb-2">Select Week</label>
                 <input
-                  type="date"
+                  type="week"
                   id="weekSelect"
-                  value={format(selectedWeek, 'yyyy-MM-dd')}
-                  onChange={(e) => setSelectedWeek(new Date(e.target.value))}
+                  value={format(selectedWeek, "yyyy-'W'II")}
+                  onChange={handleWeekChange}
                   className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-burgundy focus:border-burgundy sm:text-sm"
                 />
+                <p className="mt-1 text-sm text-gray-500">{formatWeekRange(selectedWeek)}</p>
               </div>
               {isLoading ? (
                 <p>Loading...</p>
@@ -214,7 +227,7 @@ const AdminPanel: React.FC = () => {
                         },
                         title: {
                           display: true,
-                          text: `Bookings for week of ${format(selectedWeek, 'MMM d, yyyy')}`,
+                          text: `Bookings for week of ${formatWeekRange(selectedWeek)}`,
                         },
                       },
                     }}
