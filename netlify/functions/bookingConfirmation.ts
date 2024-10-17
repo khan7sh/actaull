@@ -110,8 +110,8 @@ const handler: Handler = async (event) => {
 
     console.log('Attempting to store booking in FaunaDB:', bookingData);
     try {
-      console.log('FaunaDB client:', client);
-      console.log('FaunaDB query:', q.Create(q.Collection('bookings'), { data: bookingData }));
+      console.log('FaunaDB client:', JSON.stringify(client, null, 2));
+      console.log('FaunaDB query:', JSON.stringify(q.Create(q.Collection('bookings'), { data: bookingData }), null, 2));
       const createResult = await client.query(
         q.Create(
           q.Collection('bookings'),

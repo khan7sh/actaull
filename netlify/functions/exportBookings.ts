@@ -14,18 +14,29 @@ const handler: Handler = async (event) => {
 
   try {
     console.log('FaunaDB Secret:', process.env.FAUNADB_SECRET ? 'Set' : 'Not set');
-    console.log('FaunaDB client:', client);
+    console.log('FaunaDB client:', JSON.stringify(client, null, 2));
     
     const { exportAll } = JSON.parse(event.body || '{}');
 
     console.log('Querying FaunaDB for bookings...');
     try {
-      const collectionSize: any = await client.query(
+      const collectionExists = await client.query(
+        q.Exists(q.Collection('bookings'))
+      );
+      console.log('Bookings collection exists:', collectionExists);
+
+      if (!collectionExists) {
+        console.log('Creating bookings collection...');
+        await client.query(q.CreateCollection({ name: 'bookings' }));
+        console.log('Bookings collection created successfully');
+      }
+
+      const collectionSize = await client.query(
         q.Count(q.Documents(q.Collection('bookings')))
       );
       console.log('Number of documents in bookings collection:', collectionSize);
 
-      const result: any = await client.query(
+      const result = await client.query(
         q.Map(
           q.Paginate(q.Documents(q.Collection('bookings'))),
           q.Lambda('booking', q.Get(q.Var('booking')))
@@ -33,6 +44,7 @@ const handler: Handler = async (event) => {
       );
 
       console.log('Query result:', JSON.stringify(result, null, 2));
+      return result;
     } catch (dbError) {
       console.error('Error querying FaunaDB:', dbError);
       if (dbError instanceof Error) {
