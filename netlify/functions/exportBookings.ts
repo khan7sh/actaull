@@ -48,13 +48,18 @@ const handler: Handler = async (event) => {
 
     console.log('Fetched bookings:', JSON.stringify(bookings, null, 2));
 
-    const csv
+    const csv = stringify(bookings, {
+      header: true,
+      columns: ['name', 'email', 'phone', 'date', 'time', 'guests', 'specialRequests'],
+    });
+
     return {
       statusCode: 200,
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'text/csv',
+        'Content-Disposition': `attachment; filename="bookings_${date}.csv"`,
       },
-      body: JSON.stringify({ success: true, bookings }),
+      body: csv,
     };
   } catch (error) {
     console.error('Error fetching bookings:', error);
