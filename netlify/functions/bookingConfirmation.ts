@@ -129,8 +129,12 @@ const handler: Handler = async (event) => {
       console.error('Error message:', error.message);
       console.error('Error stack:', error.stack);
     }
+    console.log('Sending error response:', { success: false, message: 'There was an error processing your booking. Please try again.' });
     return {
       statusCode: 500,
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({ success: false, message: 'There was an error processing your booking. Please try again.' }),
     };
   }
