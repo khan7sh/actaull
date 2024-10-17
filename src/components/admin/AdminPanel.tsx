@@ -341,16 +341,6 @@ const AdminPanel: React.FC = () => {
                 />
                 <p className="mt-1 text-sm text-gray-500">{formatWeekRange(selectedWeek)}</p>
               </div>
-              <div className="mb-4">
-                <button
-                  onClick={() => exportBookingsForDate(selectedWeek)}
-                  disabled={isLoading}
-                  className="bg-burgundy text-white px-4 py-2 rounded-md hover:bg-opacity-90 transition-colors flex items-center justify-center disabled:opacity-50 text-sm font-semibold w-full sm:w-auto"
-                >
-                  <Download className="mr-2" size={18} />
-                  {isLoading ? 'Exporting...' : 'Export Bookings for Selected Week'}
-                </button>
-              </div>
               {isLoading ? (
                 <p>Loading...</p>
               ) : error ? (
