@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, BarChart2, LogOut, Menu } from 'lucide-react';
+import { Calendar, BarChart2, LogOut, Menu, Download } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
-import { startOfWeek, endOfWeek, addDays, format } from 'date-fns';
+import { startOfWeek, endOfWeek, format } from 'date-fns';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -124,6 +124,44 @@ const AdminPanel: React.FC = () => {
     return `${format(start, 'MMM d, yyyy')} - ${format(end, 'MMM d, yyyy')}`;
   };
 
+  const exportBookingsForDate = async (date: Date) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await fetch('/.netlify/functions/exportBookings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ date: date.toISOString() }),
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to export bookings');
+      }
+      const blob = await response.blob();
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        const text = await blob.text();
+        const data = JSON.parse(text);
+        throw new Error(data.error || 'Unexpected response format');
+      }
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = `bookings_${format(date, 'yyyy-MM-dd')}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Error exporting bookings:', err);
+      setError(`Error exporting bookings: ${err.message}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="flex flex-col md:flex-row h-screen bg-cream">
       {/* Mobile Header */}
@@ -214,6 +252,16 @@ const AdminPanel: React.FC = () => {
                   className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-burgundy focus:border-burgundy sm:text-sm"
                 />
                 <p className="mt-1 text-sm text-gray-500">{formatWeekRange(selectedWeek)}</p>
+              </div>
+              <div className="mb-4">
+                <button
+                  onClick={() => exportBookingsForDate(selectedWeek)}
+                  disabled={isLoading}
+                  className="bg-burgundy text-white px-4 py-2 rounded-md hover:bg-opacity-90 transition-colors flex items-center disabled:opacity-50 text-sm font-semibold"
+                >
+                  <Download className="mr-2" size={18} />
+                  {isLoading ? 'Exporting...' : 'Export Bookings for Selected Week'}
+                </button>
               </div>
               {isLoading ? (
                 <p>Loading...</p>

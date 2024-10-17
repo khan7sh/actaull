@@ -2,7 +2,7 @@ import { Handler } from '@netlify/functions';
 import { initializeApp } from 'firebase/app';
 import { getDatabase, ref, query, orderByChild, startAt, endAt, get } from 'firebase/database';
 import { stringify } from 'csv-stringify/sync';
-import { format } from 'date-fns';
+import { format, startOfWeek, endOfWeek } from 'date-fns';
 
 // Initialize Firebase
 const firebaseConfig = {
@@ -35,18 +35,16 @@ const handler: Handler = async (event) => {
       if (isNaN(parsedDate.getTime())) {
         throw new Error('Invalid date format');
       }
-      const startOfDay = new Date(parsedDate);
-      startOfDay.setUTCHours(0, 0, 0, 0);
-      const endOfDay = new Date(parsedDate);
-      endOfDay.setUTCHours(23, 59, 59, 999);
+      const startOfWeekDate = startOfWeek(parsedDate, { weekStartsOn: 2 });
+      const endOfWeekDate = endOfWeek(parsedDate, { weekStartsOn: 2 });
 
-      console.log('Querying bookings for date range:', startOfDay.toISOString(), 'to', endOfDay.toISOString());
+      console.log('Querying bookings for date range:', startOfWeekDate.toISOString(), 'to', endOfWeekDate.toISOString());
 
       bookingsQuery = query(
         ref(database, 'bookings'),
         orderByChild('date'),
-        startAt(startOfDay.toISOString()),
-        endAt(endOfDay.toISOString())
+        startAt(startOfWeekDate.toISOString()),
+        endAt(endOfWeekDate.toISOString())
       );
     } else {
       throw new Error('Either date or exportAll parameter is required');
@@ -68,7 +66,7 @@ const handler: Handler = async (event) => {
       columns: ['name', 'email', 'phone', 'date', 'time', 'guests', 'specialRequests'],
     });
 
-    const filename = exportAll ? 'all_bookings.csv' : `bookings_${date}.csv`;
+    const filename = exportAll ? 'all_bookings.csv' : `bookings_${format(new Date(date), 'yyyy-MM-dd')}.csv`;
 
     return {
       statusCode: 200,
@@ -94,4 +92,5 @@ const handler: Handler = async (event) => {
     };
   }
 };
+
 export { handler };
