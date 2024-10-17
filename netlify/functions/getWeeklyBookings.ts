@@ -17,24 +17,19 @@ const database = getDatabase(app);
 
 const handler: Handler = async (event) => {
   if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: JSON.stringify({ success: false, message: 'Method Not Allowed' }) };
+    return { statusCode: 405, body: JSON.stringify({ error: 'Method Not Allowed' }) };
   }
 
   try {
-    const { date } = JSON.parse(event.body || '{}');
-    const startOfDay = new Date(date);
-    startOfDay.setUTCHours(0, 0, 0, 0);
-    const endOfDay = new Date(date);
-    endOfDay.setUTCHours(23, 59, 59, 999);
-
-    console.log('Querying bookings for date range:', startOfDay.toISOString(), 'to', endOfDay.toISOString());
+    const { start, end } = JSON.parse(event.body || '{}');
+    console.log('Fetching bookings for date range:', start, 'to', end);
 
     const bookingsRef = ref(database, 'bookings');
     const bookingsQuery = query(
       bookingsRef,
       orderByChild('date'),
-      startAt(startOfDay.toISOString()),
-      endAt(endOfDay.toISOString())
+      startAt(start),
+      endAt(end)
     );
 
     const snapshot = await get(bookingsQuery);
@@ -44,25 +39,27 @@ const handler: Handler = async (event) => {
       bookings.push(childSnapshot.val());
     });
 
-    console.log('Fetched bookings:', JSON.stringify(bookings, null, 2));
+    console.log('Fetched bookings:', bookings);
+
+    const weeklyBookings = [0, 0, 0, 0, 0, 0, 0];
+    bookings.forEach((booking) => {
+      const bookingDate = new Date(booking.date);
+      const dayIndex = (bookingDate.getDay() + 6) % 7; // Adjust to start from Tuesday
+      weeklyBookings[dayIndex]++;
+    });
 
     return {
       statusCode: 200,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ success: true, bookings }),
+      body: JSON.stringify({ bookings: weeklyBookings }),
     };
   } catch (error) {
     console.error('Error fetching bookings:', error);
     return {
       statusCode: 500,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ success: false, error: 'Failed to fetch bookings' }),
+      body: JSON.stringify({ error: 'Failed to fetch bookings' }),
     };
   }
 };
 
 export { handler };
+

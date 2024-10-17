@@ -83,17 +83,23 @@ const AdminPanel: React.FC = () => {
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Error response:', response.status, errorText);
-        throw new Error(`Failed to fetch weekly bookings: ${response.status} ${response.statusText}`);
+        if (response.status === 404) {
+          console.log('No data found for the selected week');
+          setWeeklyBookings([0, 0, 0, 0, 0, 0, 0]);
+        } else {
+          const errorText = await response.text();
+          console.error('Error response:', response.status, errorText);
+          throw new Error(`Failed to fetch weekly bookings: ${response.status} ${response.statusText}`);
+        }
+      } else {
+        const data = await response.json();
+        console.log('Received data:', data);
+        setWeeklyBookings(data.bookings.length > 0 ? data.bookings : [0, 0, 0, 0, 0, 0, 0]);
       }
-
-      const data = await response.json();
-      console.log('Received data:', data);
-      setWeeklyBookings(data.bookings);
     } catch (err) {
       console.error('Error fetching weekly bookings:', err);
       setError(`Error fetching weekly bookings: ${err instanceof Error ? err.message : String(err)}`);
+      setWeeklyBookings([0, 0, 0, 0, 0, 0, 0]);
     } finally {
       setIsLoading(false);
     }
