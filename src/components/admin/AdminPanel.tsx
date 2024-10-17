@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import AdminLogin from './components/admin/AdminLogin';
 
 const AdminPanel: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
