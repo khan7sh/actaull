@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, BarChart2, LogOut, Menu, Download } from 'lucide-react';
+import { Calendar, BarChart2, LogOut, Menu, Download, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import { startOfWeek, endOfWeek, format } from 'date-fns';
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -15,6 +17,8 @@ const AdminPanel: React.FC = () => {
   const [selectedWeek, setSelectedWeek] = useState<Date>(startOfWeek(new Date(), { weekStartsOn: 2 }));
   const [weeklyBookings, setWeeklyBookings] = useState<number[]>([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [dailyBookings, setDailyBookings] = useState<any[]>([]);
 
   useEffect(() => {
     const isLoggedIn = localStorage.getItem('isAdminLoggedIn');
@@ -162,6 +166,40 @@ const AdminPanel: React.FC = () => {
     }
   };
 
+  const fetchDailyBookings = async (date: Date) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await fetch('/.netlify/functions/getBookings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ date: date.toISOString() }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch daily bookings: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      setDailyBookings(data.bookings);
+    } catch (err) {
+      console.error('Error fetching daily bookings:', err);
+      setError(`Error fetching daily bookings: ${err instanceof Error ? err.message : String(err)}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'bookings') {
+      fetchDailyBookings(selectedDate);
+    } else if (activeTab === 'reportdata') {
+      fetchWeeklyBookings(selectedWeek);
+    }
+  }, [activeTab, selectedDate, selectedWeek]);
+
   return (
     <div className="flex flex-col md:flex-row h-screen bg-cream">
       {/* Mobile Header */}
@@ -219,7 +257,47 @@ const AdminPanel: React.FC = () => {
         {activeTab === 'bookings' && (
           <div>
             <h2 className="text-3xl font-bold text-burgundy mb-6">Bookings</h2>
-            <div className="bg-white shadow-md rounded-lg p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-white shadow-md rounded-lg p-6">
+                <h3 className="text-xl font-semibold text-burgundy mb-4">Select Date</h3>
+                <Calendar
+                  onChange={setSelectedDate}
+                  value={selectedDate}
+                  className="w-full"
+                />
+              </div>
+              <div className="bg-white shadow-md rounded-lg p-6">
+                <h3 className="text-xl font-semibold text-burgundy mb-4">
+                  Bookings for {format(selectedDate, 'MMMM d, yyyy')}
+                </h3>
+                {isLoading ? (
+                  <p>Loading...</p>
+                ) : error ? (
+                  <p className="text-red-600">{error}</p>
+                ) : dailyBookings.length === 0 ? (
+                  <p>No bookings for this date.</p>
+                ) : (
+                  <ul className="space-y-4">
+                    {dailyBookings.map((booking, index) => (
+                      <li key={index} className="border-b pb-2">
+                        <div className="flex items-center">
+                          <User className="mr-2" size={18} />
+                          <span className="font-semibold">{booking.name}</span>
+                        </div>
+                        <p>Time: {booking.time}</p>
+                        <p>Guests: {booking.guests}</p>
+                        {booking.specialRequests && (
+                          <p className="text-sm text-gray-600">
+                            Special Requests: {booking.specialRequests}
+                          </p>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+            <div className="mt-6 bg-white shadow-md rounded-lg p-6">
               <h3 className="text-xl font-semibold text-burgundy mb-4">Export All Bookings</h3>
               <button
                 onClick={exportAllBookings}
