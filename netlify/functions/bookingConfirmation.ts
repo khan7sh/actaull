@@ -14,7 +14,7 @@ const firebaseConfig = {
   storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.FIREBASE_APP_ID,
-  databaseURL: process.env.FIREBASE_DATABASE_URL,
+  databaseURL: "https://bookings-f964e-default-rtdb.europe-west1.firebasedatabase.app",
 };
 
 const app = initializeApp(firebaseConfig);
@@ -51,7 +51,7 @@ const handler: Handler = async (event) => {
     });
 
     const customerEmail = {
-      from: '"Noshe Cambridge" <bookings@noshecambridge.co.uk>',
+      from: '"Noshe Cambridge" <noshecambridge@gmail.com>',
       to: email,
       subject: 'Booking Confirmation - Noshe Cambridge',
       html: `
@@ -79,7 +79,7 @@ const handler: Handler = async (event) => {
     });
 
     const managerEmail = {
-      from: '"Noshe Cambridge Bookings" <bookings@noshecambridge.co.uk>',
+      from: '"Noshe Cambridge Bookings" <noshecambridge@gmail.com>',
       to: 'noshecambridge@gmail.com',
       subject: 'New Booking - Noshe Cambridge',
       html: `

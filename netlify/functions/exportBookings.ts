@@ -24,9 +24,16 @@ const handler: Handler = async (event) => {
 
   try {
     const { date } = JSON.parse(event.body || '{}');
-    const startOfDay = new Date(date);
+    if (!date) {
+      throw new Error('Date is required');
+    }
+    const parsedDate = new Date(date);
+    if (isNaN(parsedDate.getTime())) {
+      throw new Error('Invalid date format');
+    }
+    const startOfDay = new Date(parsedDate);
     startOfDay.setUTCHours(0, 0, 0, 0);
-    const endOfDay = new Date(date);
+    const endOfDay = new Date(parsedDate);
     endOfDay.setUTCHours(23, 59, 59, 999);
 
     console.log('Querying bookings for date range:', startOfDay.toISOString(), 'to', endOfDay.toISOString());
@@ -69,7 +76,11 @@ const handler: Handler = async (event) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ success: false, error: 'Failed to fetch bookings', details: error.message }),
+      body: JSON.stringify({ 
+        success: false, 
+        error: 'Failed to fetch bookings', 
+        details: error instanceof Error ? error.message : 'Unknown error' 
+      }),
     };
   }
 };
