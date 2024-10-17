@@ -1,10 +1,19 @@
 import { Handler } from '@netlify/functions';
-import faunadb from 'faunadb';
+import { initializeApp } from 'firebase/app';
+import { getDatabase, ref, query, orderByChild, startAt, endAt, get } from 'firebase/database';
 
-const q = faunadb.query;
-const client = new faunadb.Client({
-  secret: process.env.FAUNADB_SECRET!,
-});
+const firebaseConfig = {
+  apiKey: process.env.FIREBASE_API_KEY,
+  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.FIREBASE_APP_ID,
+  databaseURL: process.env.FIREBASE_DATABASE_URL,
+};
+
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
 
 const handler: Handler = async (event) => {
   if (event.httpMethod !== 'POST') {
@@ -20,22 +29,21 @@ const handler: Handler = async (event) => {
 
     console.log('Querying bookings for date range:', startOfDay.toISOString(), 'to', endOfDay.toISOString());
 
-    const result: any = await client.query(
-      q.Map(
-        q.Paginate(
-          q.Range(
-            q.Match(q.Index('bookings_by_date')),
-            q.Time(startOfDay.toISOString()),
-            q.Time(endOfDay.toISOString())
-          )
-        ),
-        q.Lambda('booking', q.Get(q.Var('booking')))
-      )
+    const bookingsRef = ref(database, 'bookings');
+    const bookingsQuery = query(
+      bookingsRef,
+      orderByChild('date'),
+      startAt(startOfDay.toISOString()),
+      endAt(endOfDay.toISOString())
     );
 
-    console.log('Query result:', JSON.stringify(result, null, 2));
+    const snapshot = await get(bookingsQuery);
+    const bookings = [];
 
-    const bookings = result.data.map((booking: any) => booking.data);
+    snapshot.forEach((childSnapshot) => {
+      bookings.push(childSnapshot.val());
+    });
+
     console.log('Fetched bookings:', JSON.stringify(bookings, null, 2));
 
     return {

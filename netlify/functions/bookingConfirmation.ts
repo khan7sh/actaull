@@ -1,8 +1,24 @@
 import { Handler } from '@netlify/functions';
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
-import faunadb from 'faunadb';
+import { initializeApp } from 'firebase/app';
+import { getDatabase, ref, push } from 'firebase/database';
+
 dotenv.config();
+
+// Initialize Firebase
+const firebaseConfig = {
+  apiKey: process.env.FIREBASE_API_KEY,
+  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.FIREBASE_APP_ID,
+  databaseURL: process.env.FIREBASE_DATABASE_URL,
+};
+
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
@@ -12,11 +28,6 @@ const transporter = nodemailer.createTransport({
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
   },
-});
-
-const q = faunadb.query;
-const client = new faunadb.Client({
-  secret: process.env.FAUNADB_SECRET!,
 });
 
 const handler: Handler = async (event) => {
@@ -97,7 +108,7 @@ const handler: Handler = async (event) => {
     await transporter.sendMail(managerEmail);
     console.log('Manager email sent');
 
-    // Store booking in FaunaDB
+    // Store booking in Firebase
     const bookingData = {
       name,
       email,
@@ -108,25 +119,13 @@ const handler: Handler = async (event) => {
       specialRequests,
     };
 
-    console.log('Attempting to store booking in FaunaDB:', bookingData);
     try {
-      console.log('FaunaDB client:', JSON.stringify(client, null, 2));
-      console.log('FaunaDB query:', JSON.stringify(q.Create(q.Collection('bookings'), { data: bookingData }), null, 2));
-      const createResult = await client.query(
-        q.Create(
-          q.Collection('bookings'),
-          { data: bookingData }
-        )
-      );
-      console.log('FaunaDB create result:', JSON.stringify(createResult, null, 2));
+      const bookingsRef = ref(database, 'bookings');
+      await push(bookingsRef, bookingData);
+      console.log('Booking stored in Firebase');
     } catch (dbError) {
-      console.error('Error storing booking in FaunaDB:', dbError);
-      if (dbError instanceof Error) {
-        console.error('Error name:', dbError.name);
-        console.error('Error message:', dbError.message);
-        console.error('Error stack:', dbError.stack);
-      }
-      throw dbError; // Re-throw the error to be caught by the outer try-catch
+      console.error('Error storing booking in Firebase:', dbError);
+      throw dbError;
     }
 
     console.log('Sending success response:', { success: true, message: 'Booking confirmed successfully!' });
