@@ -11,6 +11,9 @@ const AdminPanel: React.FC = () => {
     try {
       const response = await fetch('/.netlify/functions/exportBookings', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({ exportAll: true }),
       });
       if (!response.ok) {

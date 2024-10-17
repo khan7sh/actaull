@@ -23,28 +23,33 @@ const handler: Handler = async (event) => {
   }
 
   try {
-    const { date } = JSON.parse(event.body || '{}');
-    if (!date) {
-      throw new Error('Date is required');
-    }
-    const parsedDate = new Date(date);
-    if (isNaN(parsedDate.getTime())) {
-      throw new Error('Invalid date format');
-    }
-    const startOfDay = new Date(parsedDate);
-    startOfDay.setUTCHours(0, 0, 0, 0);
-    const endOfDay = new Date(parsedDate);
-    endOfDay.setUTCHours(23, 59, 59, 999);
+    const { date, exportAll } = JSON.parse(event.body || '{}');
+    let bookingsQuery;
 
-    console.log('Querying bookings for date range:', startOfDay.toISOString(), 'to', endOfDay.toISOString());
+    if (exportAll) {
+      console.log('Exporting all bookings');
+      bookingsQuery = ref(database, 'bookings');
+    } else if (date) {
+      const parsedDate = new Date(date);
+      if (isNaN(parsedDate.getTime())) {
+        throw new Error('Invalid date format');
+      }
+      const startOfDay = new Date(parsedDate);
+      startOfDay.setUTCHours(0, 0, 0, 0);
+      const endOfDay = new Date(parsedDate);
+      endOfDay.setUTCHours(23, 59, 59, 999);
 
-    const bookingsRef = ref(database, 'bookings');
-    const bookingsQuery = query(
-      bookingsRef,
-      orderByChild('date'),
-      startAt(startOfDay.toISOString()),
-      endAt(endOfDay.toISOString())
-    );
+      console.log('Querying bookings for date range:', startOfDay.toISOString(), 'to', endOfDay.toISOString());
+
+      bookingsQuery = query(
+        ref(database, 'bookings'),
+        orderByChild('date'),
+        startAt(startOfDay.toISOString()),
+        endAt(endOfDay.toISOString())
+      );
+    } else {
+      throw new Error('Either date or exportAll parameter is required');
+    }
 
     const snapshot = await get(bookingsQuery);
     const bookings = [];
@@ -60,11 +65,13 @@ const handler: Handler = async (event) => {
       columns: ['name', 'email', 'phone', 'date', 'time', 'guests', 'specialRequests'],
     });
 
+    const filename = exportAll ? 'all_bookings.csv' : `bookings_${date}.csv`;
+
     return {
       statusCode: 200,
       headers: {
         'Content-Type': 'text/csv',
-        'Content-Disposition': `attachment; filename="bookings_${date}.csv"`,
+        'Content-Disposition': `attachment; filename="${filename}"`,
       },
       body: csv,
     };
