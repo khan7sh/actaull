@@ -256,3 +256,19 @@ html, body {
     margin: 0 auto;
   }
 }
+
+@media (max-width: 640px) {
+  .react-datepicker {
+    font-size: 0.8rem;
+  }
+  
+  .react-datepicker__day-name, .react-datepicker__day {
+    width: 1.5rem;
+    line-height: 1.5rem;
+    margin: 0.1rem;
+  }
+  
+  .react-datepicker__current-month {
+    font-size: 0.9rem;
+  }
+}

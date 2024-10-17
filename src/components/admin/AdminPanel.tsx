@@ -204,10 +204,13 @@ const AdminPanel: React.FC = () => {
               <div className="mb-4">
                 <label htmlFor="weekSelect" className="block text-sm font-medium text-gray-700 mb-2">Select Week</label>
                 <input
-                  type="week"
+                  type="date"
                   id="weekSelect"
-                  value={format(selectedWeek, "yyyy-'W'II")}
-                  onChange={handleWeekChange}
+                  value={format(selectedWeek, "yyyy-MM-dd")}
+                  onChange={(e) => {
+                    const date = new Date(e.target.value);
+                    setSelectedWeek(startOfWeek(date, { weekStartsOn: 2 }));
+                  }}
                   className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-burgundy focus:border-burgundy sm:text-sm"
                 />
                 <p className="mt-1 text-sm text-gray-500">{formatWeekRange(selectedWeek)}</p>
@@ -217,7 +220,7 @@ const AdminPanel: React.FC = () => {
               ) : error ? (
                 <p className="text-red-600">{error}</p>
               ) : (
-                <div className="h-64 md:h-96">
+                <div className="h-64 sm:h-96">
                   <Bar
                     data={{
                       labels: ['Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun', 'Mon'],
@@ -237,12 +240,18 @@ const AdminPanel: React.FC = () => {
                       plugins: {
                         legend: {
                           position: 'top' as const,
+                          labels: {
+                            boxWidth: 10,
+                            font: {
+                              size: 10,
+                            },
+                          },
                         },
                         title: {
                           display: true,
                           text: `Bookings for week of ${formatWeekRange(selectedWeek)}`,
                           font: {
-                            size: 14,
+                            size: 12,
                           },
                         },
                       },
@@ -251,6 +260,16 @@ const AdminPanel: React.FC = () => {
                           beginAtZero: true,
                           ticks: {
                             stepSize: 1,
+                            font: {
+                              size: 10,
+                            },
+                          },
+                        },
+                        x: {
+                          ticks: {
+                            font: {
+                              size: 10,
+                            },
                           },
                         },
                       },
