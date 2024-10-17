@@ -298,15 +298,25 @@ const AdminPanel: React.FC = () => {
               </div>
             </div>
             <div className="mt-6 bg-white shadow-md rounded-lg p-6">
-              <h3 className="text-xl font-semibold text-burgundy mb-4">Export All Bookings</h3>
-              <button
-                onClick={exportAllBookings}
-                disabled={isLoading}
-                className="bg-burgundy text-white px-6 py-3 rounded-md hover:bg-opacity-90 transition-colors flex items-center disabled:opacity-50 text-lg font-semibold"
-              >
-                <Calendar className="mr-3" size={24} />
-                {isLoading ? 'Exporting...' : 'Export All Bookings'}
-              </button>
+              <h3 className="text-xl font-semibold text-burgundy mb-4">Export Bookings</h3>
+              <div className="flex space-x-4">
+                <button
+                  onClick={exportAllBookings}
+                  disabled={isLoading}
+                  className="bg-burgundy text-white px-6 py-3 rounded-md hover:bg-opacity-90 transition-colors flex items-center disabled:opacity-50 text-lg font-semibold"
+                >
+                  <Calendar className="mr-3" size={24} />
+                  {isLoading ? 'Exporting...' : 'Export All Bookings'}
+                </button>
+                <button
+                  onClick={() => exportBookingsForDate(selectedDate)}
+                  disabled={isLoading}
+                  className="bg-burgundy text-white px-6 py-3 rounded-md hover:bg-opacity-90 transition-colors flex items-center disabled:opacity-50 text-lg font-semibold"
+                >
+                  <Calendar className="mr-3" size={24} />
+                  {isLoading ? 'Exporting...' : 'Export Selected Date'}
+                </button>
+              </div>
               {error && <p className="text-red-600 mt-4 text-sm">{error}</p>}
             </div>
           </div>
