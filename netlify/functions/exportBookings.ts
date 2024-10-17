@@ -14,18 +14,34 @@ const handler: Handler = async (event) => {
 
   try {
     console.log('FaunaDB Secret:', process.env.FAUNADB_SECRET ? 'Set' : 'Not set');
+    console.log('FaunaDB client:', client);
     
     const { exportAll } = JSON.parse(event.body || '{}');
 
     console.log('Querying FaunaDB for bookings...');
-    const result: any = await client.query(
-      q.Map(
-        q.Paginate(q.Documents(q.Collection('bookings'))),
-        q.Lambda('booking', q.Get(q.Var('booking')))
-      )
-    );
+    try {
+      const collectionSize: any = await client.query(
+        q.Count(q.Documents(q.Collection('bookings')))
+      );
+      console.log('Number of documents in bookings collection:', collectionSize);
 
-    console.log('Query result:', JSON.stringify(result, null, 2));
+      const result: any = await client.query(
+        q.Map(
+          q.Paginate(q.Documents(q.Collection('bookings'))),
+          q.Lambda('booking', q.Get(q.Var('booking')))
+        )
+      );
+
+      console.log('Query result:', JSON.stringify(result, null, 2));
+    } catch (dbError) {
+      console.error('Error querying FaunaDB:', dbError);
+      if (dbError instanceof Error) {
+        console.error('Error name:', dbError.name);
+        console.error('Error message:', dbError.message);
+        console.error('Error stack:', dbError.stack);
+      }
+      throw dbError;
+    }
 
     if (!result.data || result.data.length === 0) {
       console.log('No bookings found in the database.');

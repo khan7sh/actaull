@@ -108,14 +108,26 @@ const handler: Handler = async (event) => {
       specialRequests,
     };
 
-    console.log('Storing booking in FaunaDB:', bookingData);
-    const createResult = await client.query(
-      q.Create(
-        q.Collection('bookings'),
-        { data: bookingData }
-      )
-    );
-    console.log('FaunaDB create result:', JSON.stringify(createResult, null, 2));
+    console.log('Attempting to store booking in FaunaDB:', bookingData);
+    try {
+      console.log('FaunaDB client:', client);
+      console.log('FaunaDB query:', q.Create(q.Collection('bookings'), { data: bookingData }));
+      const createResult = await client.query(
+        q.Create(
+          q.Collection('bookings'),
+          { data: bookingData }
+        )
+      );
+      console.log('FaunaDB create result:', JSON.stringify(createResult, null, 2));
+    } catch (dbError) {
+      console.error('Error storing booking in FaunaDB:', dbError);
+      if (dbError instanceof Error) {
+        console.error('Error name:', dbError.name);
+        console.error('Error message:', dbError.message);
+        console.error('Error stack:', dbError.stack);
+      }
+      throw dbError; // Re-throw the error to be caught by the outer try-catch
+    }
 
     console.log('Sending success response:', { success: true, message: 'Booking confirmed successfully!' });
     return {
