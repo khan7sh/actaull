@@ -37,12 +37,13 @@ const AdminPanel: React.FC = () => {
         },
         body: JSON.stringify({ date: formattedDate }),
       });
-      if (!response.ok) {
-        throw new Error('Failed to fetch bookings');
-      }
       const data = await response.json();
-      console.log('Fetched bookings:', data.bookings);
-      setBookings(data.bookings);
+      if (data.success) {
+        console.log('Fetched bookings:', data.bookings);
+        setBookings(data.bookings);
+      } else {
+        throw new Error(data.error || 'Failed to fetch bookings');
+      }
     } catch (err) {
       setError('Error fetching bookings. Please try again.');
       console.error(err);
