@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import AdminLogin from './components/admin/AdminLogin';
 
 const AdminPanel: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -11,7 +10,7 @@ const AdminPanel: React.FC = () => {
   useEffect(() => {
     const isLoggedIn = localStorage.getItem('isAdminLoggedIn');
     if (!isLoggedIn) {
-      navigate('/admin-login');
+      navigate('/notin');
     }
   }, [navigate]);
 
@@ -55,7 +54,7 @@ const AdminPanel: React.FC = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('isAdminLoggedIn');
-    navigate('/admin-login');
+    navigate('/notin');
   };
 
   return (
