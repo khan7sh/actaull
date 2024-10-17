@@ -63,12 +63,13 @@ const handler: Handler = async (event) => {
     };
   } catch (error) {
     console.error('Error fetching bookings:', error);
+    console.error('Error details:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
     return {
       statusCode: 500,
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ success: false, error: 'Failed to fetch bookings' }),
+      body: JSON.stringify({ success: false, error: 'Failed to fetch bookings', details: error.message }),
     };
   }
 };
