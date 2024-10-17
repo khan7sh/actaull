@@ -13,26 +13,20 @@ const handler: Handler = async (event) => {
   }
 
   try {
-    const { date } = JSON.parse(event.body || '{}');
-    const startOfDay = new Date(date);
-    startOfDay.setHours(0, 0, 0, 0);
-    const endOfDay = new Date(date);
-    endOfDay.setHours(23, 59, 59, 999);
+    const { exportAll } = JSON.parse(event.body || '{}');
 
-    const result: any = await client.query(
-      q.Map(
-        q.Paginate(
-          q.Range(
-            q.Match(q.Index('bookings_by_date')),
-            q.Time(startOfDay.toISOString()),
-            q.Time(endOfDay.toISOString())
-          )
-        ),
-        q.Lambda('booking', q.Get(q.Var('booking')))
-      )
-    );
-
-    const bookings = result.data.map((booking: any) => booking.data);
+    let bookings;
+    if (exportAll) {
+      const result: any = await client.query(
+        q.Map(
+          q.Paginate(q.Documents(q.Collection('bookings'))),
+          q.Lambda('booking', q.Get(q.Var('booking')))
+        )
+      );
+      bookings = result.data.map((booking: any) => booking.data);
+    } else {
+      return { statusCode: 400, body: JSON.stringify({ error: 'Invalid request' }) };
+    }
 
     const csv = stringify(bookings, {
       header: true,
@@ -43,7 +37,7 @@ const handler: Handler = async (event) => {
       statusCode: 200,
       headers: {
         'Content-Type': 'text/csv',
-        'Content-Disposition': `attachment; filename="bookings_${startOfDay.toISOString().split('T')[0]}.csv"`,
+        'Content-Disposition': `attachment; filename="all_bookings.csv"`,
       },
       body: csv,
     };
