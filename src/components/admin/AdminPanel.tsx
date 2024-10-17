@@ -199,7 +199,7 @@ const AdminPanel: React.FC = () => {
         {activeTab === 'reportdata' && (
           <div>
             <h2 className="text-3xl font-bold text-burgundy mb-6">Report Data</h2>
-            <div className="bg-white shadow-md rounded-lg p-6">
+            <div className="bg-white shadow-md rounded-lg p-4 md:p-6">
               <h3 className="text-xl font-semibold text-burgundy mb-4">Weekly Booking Report</h3>
               <div className="mb-4">
                 <label htmlFor="weekSelect" className="block text-sm font-medium text-gray-700 mb-2">Select Week</label>
@@ -241,16 +241,23 @@ const AdminPanel: React.FC = () => {
                         title: {
                           display: true,
                           text: `Bookings for week of ${formatWeekRange(selectedWeek)}`,
+                          font: {
+                            size: 14,
+                          },
+                        },
+                      },
+                      scales: {
+                        y: {
+                          beginAtZero: true,
+                          ticks: {
+                            stepSize: 1,
+                          },
                         },
                       },
                     }}
                   />
                 </div>
               )}
-            </div>
-            <div className="mt-8 bg-white shadow-md rounded-lg p-6">
-              <h3 className="text-xl font-semibold text-burgundy mb-4">Additional Reports</h3>
-              <p className="text-gray-600">Coming soon, don't worry!</p>
             </div>
           </div>
         )}
