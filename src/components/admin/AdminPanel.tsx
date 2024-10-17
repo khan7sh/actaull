@@ -1,9 +1,18 @@
-import React, { useState } from 'react';
-import { Calendar } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Calendar, LogOut } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const AdminPanel: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const isLoggedIn = localStorage.getItem('isAdminLoggedIn');
+    if (!isLoggedIn) {
+      navigate('/admin-login');
+    }
+  }, [navigate]);
 
   const exportAllBookings = async () => {
     setIsLoading(true);
@@ -17,9 +26,16 @@ const AdminPanel: React.FC = () => {
         body: JSON.stringify({ exportAll: true }),
       });
       if (!response.ok) {
-        throw new Error('Failed to export bookings');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to export bookings');
       }
       const blob = await response.blob();
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        const text = await blob.text();
+        const data = JSON.parse(text);
+        throw new Error(data.error || 'Unexpected response format');
+      }
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.style.display = 'none';
@@ -29,17 +45,31 @@ const AdminPanel: React.FC = () => {
       a.click();
       window.URL.revokeObjectURL(url);
     } catch (err) {
-      setError('Error exporting bookings. Please try again.');
-      console.error(err);
+      console.error('Error exporting bookings:', err);
+      setError(`Error exporting bookings: ${err.message}`);
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('isAdminLoggedIn');
+    navigate('/admin-login');
+  };
+
   return (
     <div className="min-h-screen bg-cream py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-4xl font-bold text-burgundy mb-8">Admin Panel</h1>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-4xl font-bold text-burgundy">Admin Panel</h1>
+          <button
+            onClick={handleLogout}
+            className="bg-burgundy text-white px-4 py-2 rounded-md hover:bg-opacity-90 transition-colors flex items-center"
+          >
+            <LogOut className="mr-2" size={20} />
+            Log Out
+          </button>
+        </div>
         <div className="bg-white shadow-md rounded-lg p-6">
           <h2 className="text-2xl font-bold text-burgundy mb-4">Export All Bookings</h2>
           <button
