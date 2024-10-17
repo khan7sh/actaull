@@ -2,6 +2,7 @@ import { Handler } from '@netlify/functions';
 import { initializeApp } from 'firebase/app';
 import { getDatabase, ref, query, orderByChild, startAt, endAt, get } from 'firebase/database';
 import { stringify } from 'csv-stringify/sync';
+import { format } from 'date-fns';
 
 // Initialize Firebase
 const firebaseConfig = {
@@ -55,7 +56,9 @@ const handler: Handler = async (event) => {
     const bookings = [];
 
     snapshot.forEach((childSnapshot) => {
-      bookings.push(childSnapshot.val());
+      const booking = childSnapshot.val();
+      booking.date = format(new Date(booking.date), 'yyyy-MM-dd');
+      bookings.push(booking);
     });
 
     console.log('Fetched bookings:', JSON.stringify(bookings, null, 2));

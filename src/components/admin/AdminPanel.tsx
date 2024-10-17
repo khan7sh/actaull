@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, BarChart2, LogOut } from 'lucide-react';
+import { Calendar, BarChart2, LogOut, Menu } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
@@ -14,6 +14,7 @@ const AdminPanel: React.FC = () => {
   const navigate = useNavigate();
   const [selectedWeek, setSelectedWeek] = useState<Date>(new Date());
   const [weeklyBookings, setWeeklyBookings] = useState<number[]>([]);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     const isLoggedIn = localStorage.getItem('isAdminLoggedIn');
@@ -98,14 +99,25 @@ const AdminPanel: React.FC = () => {
   }, [activeTab, selectedWeek]);
 
   return (
-    <div className="flex h-screen bg-cream">
+    <div className="flex flex-col md:flex-row h-screen bg-cream">
+      {/* Mobile Header */}
+      <div className="md:hidden bg-burgundy text-white p-4 flex justify-between items-center">
+        <h1 className="text-xl font-bold">Admin Panel</h1>
+        <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="text-white">
+          <Menu size={24} />
+        </button>
+      </div>
+
       {/* Sidebar */}
-      <div className="w-64 bg-burgundy text-white">
+      <div className={`w-full md:w-64 bg-burgundy text-white h-auto md:h-screen transition-all duration-300 ease-in-out ${isSidebarOpen ? 'block' : 'hidden'} md:block`}>
         <div className="p-6">
-          <h1 className="text-2xl font-bold mb-8">Admin Panel</h1>
+          <h1 className="text-2xl font-bold mb-8 hidden md:block">Admin Panel</h1>
           <nav>
             <button
-              onClick={() => setActiveTab('bookings')}
+              onClick={() => {
+                setActiveTab('bookings');
+                setIsSidebarOpen(false);
+              }}
               className={`flex items-center w-full py-3 px-4 rounded-lg transition-colors ${
                 activeTab === 'bookings' ? 'bg-white text-burgundy' : 'hover:bg-burgundy-dark'
               }`}
@@ -114,7 +126,10 @@ const AdminPanel: React.FC = () => {
               Bookings
             </button>
             <button
-              onClick={() => setActiveTab('reportdata')}
+              onClick={() => {
+                setActiveTab('reportdata');
+                setIsSidebarOpen(false);
+              }}
               className={`flex items-center w-full py-3 px-4 rounded-lg mt-2 transition-colors ${
                 activeTab === 'reportdata' ? 'bg-white text-burgundy' : 'hover:bg-burgundy-dark'
               }`}
@@ -124,7 +139,7 @@ const AdminPanel: React.FC = () => {
             </button>
           </nav>
         </div>
-        <div className="absolute bottom-0 w-64 p-6">
+        <div className="p-6 md:absolute md:bottom-0 md:w-64">
           <button
             onClick={handleLogout}
             className="flex items-center justify-center w-full py-2 px-4 bg-white text-burgundy rounded-lg hover:bg-opacity-90 transition-colors"
@@ -136,7 +151,7 @@ const AdminPanel: React.FC = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-10 overflow-y-auto">
+      <div className="flex-1 p-4 md:p-10 overflow-y-auto">
         {activeTab === 'bookings' && (
           <div>
             <h2 className="text-3xl font-bold text-burgundy mb-6">Bookings</h2>
@@ -176,33 +191,40 @@ const AdminPanel: React.FC = () => {
               ) : error ? (
                 <p className="text-red-600">{error}</p>
               ) : (
-                <Bar
-                  data={{
-                    labels: ['Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun', 'Mon'],
-                    datasets: [
-                      {
-                        label: 'Number of Bookings',
-                        data: weeklyBookings,
-                        backgroundColor: 'rgba(120, 20, 20, 0.6)',
-                        borderColor: 'rgba(120, 20, 20, 1)',
-                        borderWidth: 1,
+                <div className="h-64 md:h-96">
+                  <Bar
+                    data={{
+                      labels: ['Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun', 'Mon'],
+                      datasets: [
+                        {
+                          label: 'Number of Bookings',
+                          data: weeklyBookings,
+                          backgroundColor: 'rgba(120, 20, 20, 0.6)',
+                          borderColor: 'rgba(120, 20, 20, 1)',
+                          borderWidth: 1,
+                        },
+                      ],
+                    }}
+                    options={{
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      plugins: {
+                        legend: {
+                          position: 'top' as const,
+                        },
+                        title: {
+                          display: true,
+                          text: `Bookings for week of ${format(selectedWeek, 'MMM d, yyyy')}`,
+                        },
                       },
-                    ],
-                  }}
-                  options={{
-                    responsive: true,
-                    plugins: {
-                      legend: {
-                        position: 'top' as const,
-                      },
-                      title: {
-                        display: true,
-                        text: `Bookings for week of ${format(selectedWeek, 'MMM d, yyyy')}`,
-                      },
-                    },
-                  }}
-                />
+                    }}
+                  />
+                </div>
               )}
+            </div>
+            <div className="mt-8 bg-white shadow-md rounded-lg p-6">
+              <h3 className="text-xl font-semibold text-burgundy mb-4">Additional Reports</h3>
+              <p className="text-gray-600">Coming soon, don't worry!</p>
             </div>
           </div>
         )}
