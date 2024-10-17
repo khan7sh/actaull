@@ -13,20 +13,30 @@ const handler: Handler = async (event) => {
   }
 
   try {
+    console.log('FaunaDB Secret:', process.env.FAUNADB_SECRET ? 'Set' : 'Not set');
+    
     const { exportAll } = JSON.parse(event.body || '{}');
 
-    let bookings;
-    if (exportAll) {
-      const result: any = await client.query(
-        q.Map(
-          q.Paginate(q.Documents(q.Collection('bookings'))),
-          q.Lambda('booking', q.Get(q.Var('booking')))
-        )
-      );
-      bookings = result.data.map((booking: any) => booking.data);
-    } else {
-      return { statusCode: 400, body: JSON.stringify({ error: 'Invalid request' }) };
+    console.log('Querying FaunaDB for bookings...');
+    const result: any = await client.query(
+      q.Map(
+        q.Paginate(q.Documents(q.Collection('bookings'))),
+        q.Lambda('booking', q.Get(q.Var('booking')))
+      )
+    );
+
+    console.log('Query result:', JSON.stringify(result, null, 2));
+
+    if (!result.data || result.data.length === 0) {
+      console.log('No bookings found in the database.');
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ message: 'No bookings found' }),
+      };
     }
+
+    const bookings = result.data.map((booking: any) => booking.data);
+    console.log(`Found ${bookings.length} bookings`);
 
     const csv = stringify(bookings, {
       header: true,

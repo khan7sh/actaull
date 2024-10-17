@@ -108,12 +108,14 @@ const handler: Handler = async (event) => {
       specialRequests,
     };
 
-    await client.query(
+    console.log('Storing booking in FaunaDB:', bookingData);
+    const createResult = await client.query(
       q.Create(
         q.Collection('bookings'),
         { data: bookingData }
       )
     );
+    console.log('FaunaDB create result:', JSON.stringify(createResult, null, 2));
 
     console.log('Sending success response:', { success: true, message: 'Booking confirmed successfully!' });
     return {
