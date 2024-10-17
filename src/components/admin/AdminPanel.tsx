@@ -5,6 +5,8 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Toolti
 import { Bar } from 'react-chartjs-2';
 import { startOfWeek, endOfWeek, eachDayOfInterval, format } from 'date-fns';
 
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+
 const AdminPanel: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
