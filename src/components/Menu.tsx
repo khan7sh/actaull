@@ -26,18 +26,18 @@ const Menu: React.FC = () => {
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
           <MenuItem 
-            title="Mixed Grill"
+            title="Mixed Grill Platter"
             description="A delicious assortment of grilled meats including lamb, chicken, and beef kebabs"
             imageUrl={mixedGrillImage}
           />
           <MenuItem 
-            title="Mantu"
+            title="Mantu (Main)"
             description="Steamed dumplings filled with seasoned ground beef and onions, topped with yogurt and lentil sauce"
             imageUrl={mantuImage}
           />
           <MenuItem 
             title="Lamb Chops"
-            description="Tender, marinated lamb chops grilled to perfection and served with Afghan-style rice"
+            description="Tender, marinated lamb chops grilled to perfection and served with Afghan-style rice, chips or naan bread"
             imageUrl={lambChopsImage}
           />
         </div>

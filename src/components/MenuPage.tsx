@@ -23,9 +23,9 @@ const MenuPage: React.FC = () => {
         <div className="w-full mb-8 rounded-lg overflow-hidden shadow-xl menu-pdf-container" data-aos="zoom-in" data-aos-delay="400">
           <iframe 
             src={menuPDF + "#view=FitH"}
-            className="w-full h-full border-none"
+            className="w-full h-full border-none pdf-iframe"
             title="Kenza Coffee Menu"
-            scrolling="no"
+            scrolling="yes"
           >
             This browser does not support PDFs. Please download the PDF to view it.
           </iframe>

@@ -220,7 +220,7 @@ html, body {
     padding-bottom: 141.4%; /* Maintain aspect ratio for mobile */
   }
   
-  .menu-pdf-container iframe {
+  .pdf-iframe {
     transform: scale(0.75);
     transform-origin: top left;
   }
@@ -234,7 +234,7 @@ html, body {
   overflow: hidden;
 }
 
-.menu-pdf-container iframe {
+.pdf-iframe {
   position: absolute;
   top: 0;
   left: 0;
@@ -248,7 +248,7 @@ html, body {
     padding-bottom: 141.4%; /* Maintain aspect ratio for tablets */
   }
   
-  .menu-pdf-container iframe {
+  .pdf-iframe {
     transform: scale(0.9);
     transform-origin: top left;
   }
