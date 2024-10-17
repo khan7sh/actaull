@@ -20,16 +20,14 @@ const MenuPage: React.FC = () => {
         <h1 className="text-5xl font-bold text-burgundy mb-4 text-center" data-aos="fade-down">Our Menu</h1>
         <p className="text-xl text-gray-600 mb-8 text-center" data-aos="fade-up" data-aos-delay="200">Discover our delightful selection of coffee and treats</p>
         
-        <div className="w-full mb-8 rounded-lg overflow-hidden shadow-xl" data-aos="zoom-in" data-aos-delay="400">
-          <div className="relative" style={{ paddingTop: '141.4%' }}>
-            <iframe 
-              src={menuPDF}
-              className="absolute top-0 left-0 w-full h-full border-none"
-              title="Kenza Coffee Menu"
-            >
-              This browser does not support PDFs. Please download the PDF to view it.
-            </iframe>
-          </div>
+        <div className="w-full mb-8 rounded-lg overflow-hidden shadow-xl menu-pdf-container" data-aos="zoom-in" data-aos-delay="400">
+          <iframe 
+            src={menuPDF}
+            className="w-full h-full border-none"
+            title="Kenza Coffee Menu"
+          >
+            This browser does not support PDFs. Please download the PDF to view it.
+          </iframe>
         </div>
         
         <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4 mb-12" data-aos="fade-up" data-aos-delay="600">
