@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import { startOfWeek, endOfWeek, format } from 'date-fns';
-import Calendar from 'react-calendar';
+import ReactCalendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -257,16 +257,37 @@ const AdminPanel: React.FC = () => {
         {activeTab === 'bookings' && (
           <div>
             <h2 className="text-3xl font-bold text-burgundy mb-6">Bookings</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-white shadow-md rounded-lg p-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="bg-white shadow-md rounded-lg p-4 lg:p-6">
                 <h3 className="text-xl font-semibold text-burgundy mb-4">Select Date</h3>
-                <Calendar
-                  onChange={setSelectedDate}
+                <ReactCalendar
+                  onChange={(date) => {
+                    setSelectedDate(date as Date);
+                    fetchDailyBookings(date as Date);
+                  }}
                   value={selectedDate}
-                  className="w-full"
+                  className="w-full max-w-full"
                 />
+                <div className="mt-4 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
+                  <button
+                    onClick={exportAllBookings}
+                    disabled={isLoading}
+                    className="bg-burgundy text-white px-4 py-2 rounded-md hover:bg-opacity-90 transition-colors flex items-center justify-center disabled:opacity-50 text-sm font-semibold w-full sm:w-auto"
+                  >
+                    <Download className="mr-2" size={18} />
+                    Export All
+                  </button>
+                  <button
+                    onClick={() => exportBookingsForDate(selectedDate)}
+                    disabled={isLoading}
+                    className="bg-burgundy text-white px-4 py-2 rounded-md hover:bg-opacity-90 transition-colors flex items-center justify-center disabled:opacity-50 text-sm font-semibold w-full sm:w-auto"
+                  >
+                    <Download className="mr-2" size={18} />
+                    Export Selected Date
+                  </button>
+                </div>
               </div>
-              <div className="bg-white shadow-md rounded-lg p-6">
+              <div className="bg-white shadow-md rounded-lg p-4 lg:p-6">
                 <h3 className="text-xl font-semibold text-burgundy mb-4">
                   Bookings for {format(selectedDate, 'MMMM d, yyyy')}
                 </h3>
@@ -297,35 +318,14 @@ const AdminPanel: React.FC = () => {
                 )}
               </div>
             </div>
-            <div className="mt-6 bg-white shadow-md rounded-lg p-6">
-              <h3 className="text-xl font-semibold text-burgundy mb-4">Export Bookings</h3>
-              <div className="flex space-x-4">
-                <button
-                  onClick={exportAllBookings}
-                  disabled={isLoading}
-                  className="bg-burgundy text-white px-6 py-3 rounded-md hover:bg-opacity-90 transition-colors flex items-center disabled:opacity-50 text-lg font-semibold"
-                >
-                  <Calendar className="mr-3" size={24} />
-                  {isLoading ? 'Exporting...' : 'Export All Bookings'}
-                </button>
-                <button
-                  onClick={() => exportBookingsForDate(selectedDate)}
-                  disabled={isLoading}
-                  className="bg-burgundy text-white px-6 py-3 rounded-md hover:bg-opacity-90 transition-colors flex items-center disabled:opacity-50 text-lg font-semibold"
-                >
-                  <Calendar className="mr-3" size={24} />
-                  {isLoading ? 'Exporting...' : 'Export Selected Date'}
-                </button>
-              </div>
-              {error && <p className="text-red-600 mt-4 text-sm">{error}</p>}
-            </div>
+            {error && <p className="text-red-600 mt-4 text-sm">{error}</p>}
           </div>
         )}
 
         {activeTab === 'reportdata' && (
           <div>
             <h2 className="text-3xl font-bold text-burgundy mb-6">Report Data</h2>
-            <div className="bg-white shadow-md rounded-lg p-4 md:p-6">
+            <div className="bg-white shadow-md rounded-lg p-4 lg:p-6">
               <h3 className="text-xl font-semibold text-burgundy mb-4">Weekly Booking Report</h3>
               <div className="mb-4">
                 <label htmlFor="weekSelect" className="block text-sm font-medium text-gray-700 mb-2">Select Week</label>
@@ -345,7 +345,7 @@ const AdminPanel: React.FC = () => {
                 <button
                   onClick={() => exportBookingsForDate(selectedWeek)}
                   disabled={isLoading}
-                  className="bg-burgundy text-white px-4 py-2 rounded-md hover:bg-opacity-90 transition-colors flex items-center disabled:opacity-50 text-sm font-semibold"
+                  className="bg-burgundy text-white px-4 py-2 rounded-md hover:bg-opacity-90 transition-colors flex items-center justify-center disabled:opacity-50 text-sm font-semibold w-full sm:w-auto"
                 >
                   <Download className="mr-2" size={18} />
                   {isLoading ? 'Exporting...' : 'Export Bookings for Selected Week'}
