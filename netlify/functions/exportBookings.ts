@@ -63,7 +63,13 @@ const handler: Handler = async (event) => {
       };
     }
 
-    const bookings = result.data.map((booking: any) => booking.data);
+    const bookings = result.data.map((booking: any) => {
+      const bookingData = booking.data;
+      return {
+        ...bookingData,
+        date: new Date(bookingData.date).toLocaleDateString(),
+      };
+    });
     console.log(`Found ${bookings.length} bookings`);
 
     const csv = stringify(bookings, {

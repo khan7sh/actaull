@@ -102,7 +102,7 @@ const handler: Handler = async (event) => {
       name,
       email,
       phone,
-      date: new Date(date),
+      date: new Date(date).toISOString(),
       time,
       guests: parseInt(guests),
       specialRequests,
