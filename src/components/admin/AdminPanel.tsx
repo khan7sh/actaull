@@ -72,6 +72,8 @@ const AdminPanel: React.FC = () => {
     try {
       const start = startOfWeek(date, { weekStartsOn: 2 });
       const end = endOfWeek(date, { weekStartsOn: 2 });
+      console.log('Fetching bookings for date range:', start.toISOString(), 'to', end.toISOString());
+      
       const response = await fetch('/.netlify/functions/getWeeklyBookings', {
         method: 'POST',
         headers: {
@@ -79,10 +81,15 @@ const AdminPanel: React.FC = () => {
         },
         body: JSON.stringify({ start: start.toISOString(), end: end.toISOString() }),
       });
+
       if (!response.ok) {
-        throw new Error('Failed to fetch weekly bookings');
+        const errorText = await response.text();
+        console.error('Error response:', response.status, errorText);
+        throw new Error(`Failed to fetch weekly bookings: ${response.status} ${response.statusText}`);
       }
+
       const data = await response.json();
+      console.log('Received data:', data);
       setWeeklyBookings(data.bookings);
     } catch (err) {
       console.error('Error fetching weekly bookings:', err);
