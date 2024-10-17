@@ -217,11 +217,11 @@ html, body {
 
 @media (max-width: 768px) {
   .menu-pdf-container {
-    padding-bottom: 200%; /* Increase height for mobile */
+    padding-bottom: 141.4%; /* Maintain aspect ratio for mobile */
   }
   
   .menu-pdf-container iframe {
-    transform: scale(1);
+    transform: scale(0.75);
     transform-origin: top left;
   }
 }
@@ -246,6 +246,11 @@ html, body {
 @media (min-width: 769px) and (max-width: 1023px) {
   .menu-pdf-container {
     padding-bottom: 141.4%; /* Maintain aspect ratio for tablets */
+  }
+  
+  .menu-pdf-container iframe {
+    transform: scale(0.9);
+    transform-origin: top left;
   }
 }
 
