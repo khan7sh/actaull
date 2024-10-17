@@ -121,10 +121,11 @@ const handler: Handler = async (event) => {
 
     try {
       const bookingsRef = ref(database, 'bookings');
-      await push(bookingsRef, bookingData);
-      console.log('Booking stored in Firebase');
+      const newBookingRef = await push(bookingsRef, bookingData);
+      console.log('Booking stored in Firebase with key:', newBookingRef.key);
     } catch (dbError) {
       console.error('Error storing booking in Firebase:', dbError);
+      console.error('Error details:', JSON.stringify(dbError, null, 2));
       throw dbError;
     }
 
