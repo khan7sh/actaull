@@ -221,7 +221,7 @@ html, body {
   }
   
   .pdf-iframe {
-    transform: scale(0.75);
+    transform: scale(1);
     transform-origin: top left;
   }
 }
@@ -249,7 +249,7 @@ html, body {
   }
   
   .pdf-iframe {
-    transform: scale(0.9);
+    transform: scale(1);
     transform-origin: top left;
   }
 }
