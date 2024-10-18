@@ -2,7 +2,7 @@ import { Handler } from '@netlify/functions';
 import { initializeApp } from 'firebase/app';
 import { getDatabase, ref, query, orderByChild, startAt, endAt, get } from 'firebase/database';
 import { stringify } from 'csv-stringify/sync';
-import { format, startOfWeek, endOfWeek } from 'date-fns';
+import { format, startOfDay, endOfDay } from 'date-fns';
 
 // Initialize Firebase
 const firebaseConfig = {
@@ -24,30 +24,30 @@ const handler: Handler = async (event) => {
   }
 
   try {
-    const { date, exportAll } = JSON.parse(event.body || '{}');
+    const { date, exportAll, exportType } = JSON.parse(event.body || '{}');
     let bookingsQuery;
 
     if (exportAll) {
       console.log('Exporting all bookings');
       bookingsQuery = ref(database, 'bookings');
-    } else if (date) {
+    } else if (date && exportType === 'daily') {
       const parsedDate = new Date(date);
       if (isNaN(parsedDate.getTime())) {
         throw new Error('Invalid date format');
       }
-      const startOfWeekDate = startOfWeek(parsedDate, { weekStartsOn: 2 });
-      const endOfWeekDate = endOfWeek(parsedDate, { weekStartsOn: 2 });
+      const dayStart = startOfDay(parsedDate);
+      const dayEnd = endOfDay(parsedDate);
 
-      console.log('Querying bookings for date range:', startOfWeekDate.toISOString(), 'to', endOfWeekDate.toISOString());
+      console.log('Querying bookings for date:', dayStart.toISOString(), 'to', dayEnd.toISOString());
 
       bookingsQuery = query(
         ref(database, 'bookings'),
         orderByChild('date'),
-        startAt(startOfWeekDate.toISOString()),
-        endAt(endOfWeekDate.toISOString())
+        startAt(dayStart.toISOString()),
+        endAt(dayEnd.toISOString())
       );
     } else {
-      throw new Error('Either date or exportAll parameter is required');
+      throw new Error('Invalid export parameters');
     }
 
     const snapshot = await get(bookingsQuery);
