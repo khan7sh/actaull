@@ -1,13 +1,26 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Download, ShoppingBag } from 'lucide-react';
 import AOS from 'aos';
 import menuPDF from '../assets/menu.pdf';
 
 const MenuPage: React.FC = () => {
+  const [pdfUrl, setPdfUrl] = useState('');
+
   useEffect(() => {
     window.scrollTo(0, 0);
-    AOS.refresh(); // Refresh AOS
+    AOS.refresh();
+    
+    // Convert PDF to base64
+    fetch(menuPDF)
+      .then(response => response.blob())
+      .then(blob => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setPdfUrl(reader.result as string);
+        };
+        reader.readAsDataURL(blob);
+      });
   }, []);
 
   return (
@@ -21,14 +34,15 @@ const MenuPage: React.FC = () => {
         <p className="text-xl text-gray-600 mb-8 text-center" data-aos="fade-up" data-aos-delay="200">Discover our delightful selection of coffee and treats</p>
         
         <div className="w-full mb-8 rounded-lg overflow-hidden shadow-xl menu-pdf-container" data-aos="zoom-in" data-aos-delay="400">
-          <iframe 
-            src={menuPDF}
-            className="w-full h-full border-none pdf-iframe"
-            title="Kenza Coffee Menu"
-            scrolling="yes"
-          >
-            This browser does not support PDFs. Please download the PDF to view it.
-          </iframe>
+          {pdfUrl && (
+            <iframe 
+              src={`${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0`}
+              className="w-full h-full border-none pdf-iframe"
+              title="Kenza Coffee Menu"
+            >
+              This browser does not support PDFs. Please download the PDF to view it.
+            </iframe>
+          )}
         </div>
         
         <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4 mb-12" data-aos="fade-up" data-aos-delay="600">
