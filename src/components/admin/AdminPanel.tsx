@@ -172,7 +172,7 @@ const AdminPanel: React.FC = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const localDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      const localDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
       const response = await fetch('/.netlify/functions/getBookings', {
         method: 'POST',
         headers: {
@@ -343,7 +343,7 @@ const AdminPanel: React.FC = () => {
                             <User className="mr-2" size={18} />
                             <span className="font-semibold">{booking.name}</span>
                           </div>
-                          <p>Date: {format(new Date(booking.date), 'yyyy-MM-dd')}</p>
+                          <p>Date: {format(new Date(booking.date), 'yyyy-MM-dd', { timeZone: 'UTC' })}</p>
                           <p>Time: {booking.time}</p>
                           <p>Guests: {booking.guests}</p>
                           {booking.specialRequests && (

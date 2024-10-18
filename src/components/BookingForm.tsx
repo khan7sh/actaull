@@ -70,8 +70,9 @@ const BookingForm: React.FC = () => {
             <DatePicker
               selected={selectedDate}
               onChange={(date: Date) => {
-                setSelectedDate(date);
-                field.onChange(date);
+                const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+                setSelectedDate(utcDate);
+                field.onChange(utcDate.toISOString());
               }}
               filterDate={isWeekday}
               inline

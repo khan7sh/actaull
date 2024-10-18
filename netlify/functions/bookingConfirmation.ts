@@ -75,7 +75,8 @@ const handler: Handler = async (event) => {
     const formattedDate = new Date(date).toLocaleDateString('en-GB', {
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
+      day: 'numeric',
+      timeZone: 'UTC'
     });
 
     const managerEmail = {
