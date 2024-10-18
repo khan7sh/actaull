@@ -19,6 +19,8 @@ const AdminPanel: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [dailyBookings, setDailyBookings] = useState<any[]>([]);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [cancellingBookingId, setCancellingBookingId] = useState<string | null>(null);
 
   useEffect(() => {
     const isLoggedIn = localStorage.getItem('isAdminLoggedIn');
@@ -200,6 +202,37 @@ const AdminPanel: React.FC = () => {
     }
   }, [activeTab, selectedDate, selectedWeek]);
 
+  const handleCancelBooking = async (bookingId: string) => {
+    if (window.confirm('Are you sure you want to cancel this booking? This action cannot be undone.')) {
+      setCancellingBookingId(bookingId);
+      setError(null);
+      try {
+        const response = await fetch('/.netlify/functions/cancelBooking', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ bookingId }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to cancel booking');
+        }
+
+        setSuccessMessage('Booking cancelled successfully');
+        setTimeout(() => setSuccessMessage(null), 3000); // Clear the message after 3 seconds
+
+        // Refresh the bookings list
+        fetchDailyBookings(selectedDate);
+      } catch (err) {
+        console.error('Error cancelling booking:', err);
+        setError(`Error cancelling booking: ${err instanceof Error ? err.message : String(err)}`);
+      } finally {
+        setCancellingBookingId(null);
+      }
+    }
+  };
+
   return (
     <div className="flex flex-col md:flex-row h-screen bg-cream">
       {/* Mobile Header */}
@@ -300,18 +333,31 @@ const AdminPanel: React.FC = () => {
                 ) : (
                   <ul className="space-y-4">
                     {dailyBookings.map((booking, index) => (
-                      <li key={index} className="border-b pb-2">
-                        <div className="flex items-center">
-                          <User className="mr-2" size={18} />
-                          <span className="font-semibold">{booking.name}</span>
+                      <li key={index} className="border-b pb-2 flex justify-between items-center">
+                        <div>
+                          <div className="flex items-center">
+                            <User className="mr-2" size={18} />
+                            <span className="font-semibold">{booking.name}</span>
+                          </div>
+                          <p>Time: {booking.time}</p>
+                          <p>Guests: {booking.guests}</p>
+                          {booking.specialRequests && (
+                            <p className="text-sm text-gray-600">
+                              Special Requests: {booking.specialRequests}
+                            </p>
+                          )}
                         </div>
-                        <p>Time: {booking.time}</p>
-                        <p>Guests: {booking.guests}</p>
-                        {booking.specialRequests && (
-                          <p className="text-sm text-gray-600">
-                            Special Requests: {booking.specialRequests}
-                          </p>
-                        )}
+                        <button
+                          onClick={() => handleCancelBooking(booking.id)}
+                          disabled={cancellingBookingId === booking.id}
+                          className={`px-3 py-1 rounded-md transition-colors ${
+                            cancellingBookingId === booking.id
+                              ? 'bg-gray-400 cursor-not-allowed'
+                              : 'bg-red-500 hover:bg-red-600'
+                          } text-white`}
+                        >
+                          {cancellingBookingId === booking.id ? 'Cancelling...' : 'Cancel'}
+                        </button>
                       </li>
                     ))}
                   </ul>
@@ -319,6 +365,9 @@ const AdminPanel: React.FC = () => {
               </div>
             </div>
             {error && <p className="text-red-600 mt-4 text-sm">{error}</p>}
+            {successMessage && (
+              <p className="mt-4 text-green-600 text-center">{successMessage}</p>
+            )}
           </div>
         )}
 

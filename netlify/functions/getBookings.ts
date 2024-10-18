@@ -41,7 +41,10 @@ const handler: Handler = async (event) => {
     const bookings = [];
 
     snapshot.forEach((childSnapshot) => {
-      bookings.push(childSnapshot.val());
+      bookings.push({
+        id: childSnapshot.key,
+        ...childSnapshot.val()
+      });
     });
 
     console.log('Fetched bookings:', JSON.stringify(bookings, null, 2));
