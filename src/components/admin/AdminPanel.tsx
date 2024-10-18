@@ -339,6 +339,7 @@ const AdminPanel: React.FC = () => {
                             <User className="mr-2" size={18} />
                             <span className="font-semibold">{booking.name}</span>
                           </div>
+                          <p>Date: {format(new Date(booking.date), 'yyyy-MM-dd')}</p>
                           <p>Time: {booking.time}</p>
                           <p>Guests: {booking.guests}</p>
                           {booking.specialRequests && (

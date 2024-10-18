@@ -22,10 +22,9 @@ const handler: Handler = async (event) => {
 
   try {
     const { date } = JSON.parse(event.body || '{}');
-    const startOfDay = new Date(date);
-    startOfDay.setUTCHours(0, 0, 0, 0);
-    const endOfDay = new Date(date);
-    endOfDay.setUTCHours(23, 59, 59, 999);
+    const selectedDate = new Date(date);
+    const startOfDay = new Date(Date.UTC(selectedDate.getUTCFullYear(), selectedDate.getUTCMonth(), selectedDate.getUTCDate()));
+    const endOfDay = new Date(Date.UTC(selectedDate.getUTCFullYear(), selectedDate.getUTCMonth(), selectedDate.getUTCDate(), 23, 59, 59, 999));
 
     console.log('Querying bookings for date range:', startOfDay.toISOString(), 'to', endOfDay.toISOString());
 
