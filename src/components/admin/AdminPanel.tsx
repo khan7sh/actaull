@@ -172,12 +172,13 @@ const AdminPanel: React.FC = () => {
     setIsLoading(true);
     setError(null);
     try {
+      const localDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
       const response = await fetch('/.netlify/functions/getBookings', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ date: date.toISOString() }),
+        body: JSON.stringify({ date: localDate.toISOString() }),
       });
 
       if (!response.ok) {
@@ -185,7 +186,10 @@ const AdminPanel: React.FC = () => {
       }
 
       const data = await response.json();
-      setDailyBookings(data.bookings);
+      setDailyBookings(data.bookings.map(booking => ({
+        ...booking,
+        date: new Date(booking.date)
+      })));
     } catch (err) {
       console.error('Error fetching daily bookings:', err);
       setError(`Error fetching daily bookings: ${err instanceof Error ? err.message : String(err)}`);
