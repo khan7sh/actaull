@@ -6,6 +6,7 @@ import { Bar } from 'react-chartjs-2';
 import { startOfWeek, endOfWeek, format } from 'date-fns';
 import ReactCalendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
+import EditBookingModal from './EditBookingModal';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -21,6 +22,7 @@ const AdminPanel: React.FC = () => {
   const [dailyBookings, setDailyBookings] = useState<any[]>([]);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [cancellingBookingId, setCancellingBookingId] = useState<string | null>(null);
+  const [editingBooking, setEditingBooking] = useState<any>(null);
 
   useEffect(() => {
     const isLoggedIn = localStorage.getItem('isAdminLoggedIn');
@@ -66,7 +68,6 @@ const AdminPanel: React.FC = () => {
       setIsLoading(false);
     }
   };
-
   const handleLogout = () => {
     localStorage.removeItem('isAdminLoggedIn');
     navigate('/notin');
@@ -110,7 +111,6 @@ const AdminPanel: React.FC = () => {
       setIsLoading(false);
     }
   };
-
   useEffect(() => {
     if (activeTab === 'reportdata') {
       fetchWeeklyBookings(selectedWeek);
@@ -167,7 +167,6 @@ const AdminPanel: React.FC = () => {
       setIsLoading(false);
     }
   };
-
   const fetchDailyBookings = async (date: Date) => {
     setIsLoading(true);
     setError(null);
@@ -205,7 +204,6 @@ const AdminPanel: React.FC = () => {
       fetchWeeklyBookings(selectedWeek);
     }
   }, [activeTab, selectedDate, selectedWeek]);
-
   const handleCancelBooking = async (bookingId: string) => {
     if (window.confirm('Are you sure you want to cancel this booking? This action cannot be undone.')) {
       setCancellingBookingId(bookingId);
@@ -234,6 +232,33 @@ const AdminPanel: React.FC = () => {
       } finally {
         setCancellingBookingId(null);
       }
+    }
+  };
+
+  const handleEditBooking = (booking: any) => {
+    setEditingBooking(booking);
+  };
+
+  const handleSaveEditedBooking = async (updatedBooking: any) => {
+    try {
+      const response = await fetch('/.netlify/functions/editBooking', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedBooking),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to edit booking');
+      }
+
+      setSuccessMessage('Booking updated successfully');
+      setEditingBooking(null);
+      fetchDailyBookings(selectedDate);
+    } catch (error) {
+      console.error('Error editing booking:', error);
+      setError(`Error editing booking: ${error instanceof Error ? error.message : String(error)}`);
     }
   };
 
@@ -363,6 +388,12 @@ const AdminPanel: React.FC = () => {
                         >
                           {cancellingBookingId === booking.id ? 'Cancelling...' : 'Cancel'}
                         </button>
+                        <button
+                          onClick={() => handleEditBooking(booking)}
+                          className="px-3 py-1 rounded-md transition-colors bg-blue-500 hover:bg-blue-600 text-white ml-2"
+                        >
+                          Edit
+                        </button>
                       </li>
                     ))}
                   </ul>
@@ -461,6 +492,13 @@ const AdminPanel: React.FC = () => {
           </div>
         )}
       </div>
+      {editingBooking && (
+        <EditBookingModal
+          booking={editingBooking}
+          onClose={() => setEditingBooking(null)}
+          onSave={handleSaveEditedBooking}
+        />
+      )}
     </div>
   );
 };
