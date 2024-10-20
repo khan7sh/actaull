@@ -144,7 +144,7 @@ const AdminPanel: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ date: date.toISOString(), exportType: 'daily' }),
+        body: JSON.stringify({ date: date.toISOString(), exportType: 'daily', sort: 'asc' }),
       });
       if (!response.ok) {
         const errorData = await response.json();

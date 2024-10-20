@@ -24,7 +24,7 @@ const handler: Handler = async (event) => {
   }
 
   try {
-    const { date, exportAll, exportType } = JSON.parse(event.body || '{}');
+    const { date, exportAll, exportType, sort } = JSON.parse(event.body || '{}');
     let bookingsQuery;
 
     if (exportAll) {
@@ -60,6 +60,15 @@ const handler: Handler = async (event) => {
     });
 
     console.log('Fetched bookings:', JSON.stringify(bookings, null, 2));
+
+    // Sort bookings by time if it's a daily export
+    if (exportType === 'daily' && sort === 'asc') {
+      bookings.sort((a, b) => {
+        const timeA = a.time.split(':').map(Number);
+        const timeB = b.time.split(':').map(Number);
+        return timeA[0] * 60 + timeA[1] - (timeB[0] * 60 + timeB[1]);
+      });
+    }
 
     const csv = stringify(bookings, {
       header: true,
