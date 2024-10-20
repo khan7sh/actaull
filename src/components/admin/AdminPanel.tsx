@@ -101,12 +101,17 @@ const AdminPanel: React.FC = () => {
       } else {
         const data = await response.json();
         console.log('Received data:', data);
-        setWeeklyBookings(data.bookings.length > 0 ? data.bookings : [0, 0, 0, 0, 0, 0, 0]);
+        const adjustedBookings = data.bookings.map((count: number, index: number) => {
+          const day = new Date(start);
+          day.setDate(day.getDate() + index);
+          return { date: day, count };
+        });
+        setWeeklyBookings(adjustedBookings);
       }
     } catch (err) {
       console.error('Error fetching weekly bookings:', err);
       setError(`Error fetching weekly bookings: ${err instanceof Error ? err.message : String(err)}`);
-      setWeeklyBookings([0, 0, 0, 0, 0, 0, 0]);
+      setWeeklyBookings([]);
     } finally {
       setIsLoading(false);
     }
@@ -185,10 +190,17 @@ const AdminPanel: React.FC = () => {
       }
 
       const data = await response.json();
-      setDailyBookings(data.bookings.map(booking => ({
-        ...booking,
-        date: new Date(booking.date)
-      })));
+      const sortedBookings = data.bookings
+        .map(booking => ({
+          ...booking,
+          date: new Date(booking.date)
+        }))
+        .sort((a, b) => {
+          const timeA = a.time.split(':').map(Number);
+          const timeB = b.time.split(':').map(Number);
+          return timeA[0] * 60 + timeA[1] - (timeB[0] * 60 + timeB[1]);
+        });
+      setDailyBookings(sortedBookings);
     } catch (err) {
       console.error('Error fetching daily bookings:', err);
       setError(`Error fetching daily bookings: ${err instanceof Error ? err.message : String(err)}`);
@@ -318,7 +330,7 @@ const AdminPanel: React.FC = () => {
       <div className="flex-1 p-4 md:p-10 overflow-y-auto">
         {activeTab === 'bookings' && (
           <div>
-            <h2 className="text-3xl font-bold text-burgundy mb-6">Bookings</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-burgundy mb-6">Bookings</h2>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="bg-white shadow-md rounded-lg p-4 lg:p-6">
                 <h3 className="text-xl font-semibold text-burgundy mb-4">Select Date</h3>
@@ -362,38 +374,42 @@ const AdminPanel: React.FC = () => {
                 ) : (
                   <ul className="space-y-4">
                     {dailyBookings.map((booking, index) => (
-                      <li key={index} className="border-b pb-2 flex justify-between items-center">
-                        <div>
-                          <div className="flex items-center">
-                            <User className="mr-2" size={18} />
-                            <span className="font-semibold">{booking.name}</span>
+                      <li key={index} className="border-b pb-2">
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+                          <div>
+                            <div className="flex items-center">
+                              <User className="mr-2" size={18} />
+                              <span className="font-semibold">{booking.name}</span>
+                            </div>
+                            <p>Date: {format(new Date(booking.date), 'yyyy-MM-dd', { timeZone: 'UTC' })}</p>
+                            <p>Time: {booking.time}</p>
+                            <p>Guests: {booking.guests}</p>
+                            {booking.specialRequests && (
+                              <p className="text-sm text-gray-600">
+                                Special Requests: {booking.specialRequests}
+                              </p>
+                            )}
                           </div>
-                          <p>Date: {format(new Date(booking.date), 'yyyy-MM-dd', { timeZone: 'UTC' })}</p>
-                          <p>Time: {booking.time}</p>
-                          <p>Guests: {booking.guests}</p>
-                          {booking.specialRequests && (
-                            <p className="text-sm text-gray-600">
-                              Special Requests: {booking.specialRequests}
-                            </p>
-                          )}
+                          <div className="mt-2 sm:mt-0 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                            <button
+                              onClick={() => handleCancelBooking(booking.id)}
+                              disabled={cancellingBookingId === booking.id}
+                              className={`px-3 py-1 rounded-md transition-colors ${
+                                cancellingBookingId === booking.id
+                                  ? 'bg-gray-400 cursor-not-allowed'
+                                  : 'bg-red-500 hover:bg-red-600'
+                              } text-white`}
+                            >
+                              {cancellingBookingId === booking.id ? 'Cancelling...' : 'Cancel'}
+                            </button>
+                            <button
+                              onClick={() => handleEditBooking(booking)}
+                              className="px-3 py-1 rounded-md transition-colors bg-blue-500 hover:bg-blue-600 text-white"
+                            >
+                              Edit
+                            </button>
+                          </div>
                         </div>
-                        <button
-                          onClick={() => handleCancelBooking(booking.id)}
-                          disabled={cancellingBookingId === booking.id}
-                          className={`px-3 py-1 rounded-md transition-colors ${
-                            cancellingBookingId === booking.id
-                              ? 'bg-gray-400 cursor-not-allowed'
-                              : 'bg-red-500 hover:bg-red-600'
-                          } text-white`}
-                        >
-                          {cancellingBookingId === booking.id ? 'Cancelling...' : 'Cancel'}
-                        </button>
-                        <button
-                          onClick={() => handleEditBooking(booking)}
-                          className="px-3 py-1 rounded-md transition-colors bg-blue-500 hover:bg-blue-600 text-white ml-2"
-                        >
-                          Edit
-                        </button>
                       </li>
                     ))}
                   </ul>
@@ -409,7 +425,7 @@ const AdminPanel: React.FC = () => {
 
         {activeTab === 'reportdata' && (
           <div>
-            <h2 className="text-3xl font-bold text-burgundy mb-6">Report Data</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-burgundy mb-6">Report Data</h2>
             <div className="bg-white shadow-md rounded-lg p-4 lg:p-6">
               <h3 className="text-xl font-semibold text-burgundy mb-4">Weekly Booking Report</h3>
               <div className="mb-4">
@@ -434,11 +450,11 @@ const AdminPanel: React.FC = () => {
                 <div className="h-64 sm:h-96">
                   <Bar
                     data={{
-                      labels: ['Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun', 'Mon'],
+                      labels: weeklyBookings.map(booking => format(booking.date, 'EEE')),
                       datasets: [
                         {
                           label: 'Number of Bookings',
-                          data: weeklyBookings,
+                          data: weeklyBookings.map(booking => booking.count),
                           backgroundColor: 'rgba(120, 20, 20, 0.6)',
                           borderColor: 'rgba(120, 20, 20, 1)',
                           borderWidth: 1,
@@ -463,6 +479,14 @@ const AdminPanel: React.FC = () => {
                           text: `Bookings for week of ${formatWeekRange(selectedWeek)}`,
                           font: {
                             size: 12,
+                          },
+                        },
+                        tooltip: {
+                          callbacks: {
+                            title: (tooltipItems) => {
+                              const index = tooltipItems[0].dataIndex;
+                              return format(weeklyBookings[index].date, 'MMMM d, yyyy');
+                            },
                           },
                         },
                       },
