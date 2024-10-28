@@ -5,36 +5,72 @@ import "react-datepicker/dist/react-datepicker.css";
 import axios from 'axios';
 
 const BookingForm: React.FC = () => {
-  const { register, handleSubmit, control, formState: { errors } } = useForm();
+  const { register, handleSubmit, control, formState: { errors }, reset } = useForm();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [bookingStatus, setBookingStatus] = useState<'idle' | 'confirming' | 'success' | 'error'>('idle');
   const [submitMessage, setSubmitMessage] = useState('');
 
   const onSubmit = async (data: any) => {
     setIsSubmitting(true);
+    setBookingStatus('confirming');
     setSubmitMessage('');
+    
+    // Format the data before sending
+    const formattedData = {
+      ...data,
+      date: selectedDate.toISOString(),
+      guests: parseInt(data.guests)
+    };
+    
     try {
-      const response = await axios.post('/.netlify/functions/bookingConfirmation', data);
-      console.log('Full response:', response);
+      const response = await axios.post('/.netlify/functions/bookingConfirmation', formattedData, {
+        timeout: 10000
+      });
+      
       if (response.data && response.data.success) {
-        console.log('Setting success message');
-        setSubmitMessage('Booking confirmed! Check your email for details.');
+        setBookingStatus('success');
+        setSubmitMessage(response.data.message);
+        reset();
+        setSelectedDate(new Date());
       } else {
-        console.log('Unsuccessful response:', response.data);
-        setSubmitMessage(response.data?.message || 'There was an error processing your booking. Please try again.');
+        throw new Error(response.data?.message || 'Booking failed');
       }
     } catch (error) {
-      console.error('Booking error:', error);
-      if (axios.isAxiosError(error) && error.response) {
-        console.error('Error response:', error.response.data);
-        setSubmitMessage(error.response.data?.message || 'There was an error processing your booking. Please try again.');
-      } else {
-        setSubmitMessage('There was an error processing your booking. Please try again.');
-      }
+      setBookingStatus('error');
+      setSubmitMessage('There was an error processing your booking. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  if (bookingStatus === 'success') {
+    return (
+      <div className="text-center py-8">
+        <div className="mb-6">
+          <svg className="mx-auto h-16 w-16 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <h3 className="text-2xl font-serif font-semibold text-burgundy mb-4">Thank You for Your Booking!</h3>
+        <p className="text-gray-600 mb-6">
+          Your reservation has been confirmed. We've sent the details to your email.
+        </p>
+        <p className="text-gray-600 mb-8">
+          We look forward to welcoming you to Noshe Cambridge!
+        </p>
+        <button
+          onClick={() => {
+            setBookingStatus('idle');
+            setSubmitMessage('');
+          }}
+          className="bg-burgundy text-white py-2 px-6 rounded-md hover:bg-opacity-90 transition-colors"
+        >
+          Make Another Booking
+        </button>
+      </div>
+    );
+  }
 
   const isWeekday = (date: Date) => {
     const day = date.getDay();
@@ -159,16 +195,28 @@ const BookingForm: React.FC = () => {
 
       <button 
         type="submit" 
-        className="w-full bg-burgundy text-white py-3 px-4 rounded-md hover:bg-opacity-90 transition-colors text-lg font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-150"
+        className="w-full bg-burgundy text-white py-3 px-4 rounded-md hover:bg-opacity-90 transition-colors text-lg font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-150 disabled:opacity-50"
         disabled={isSubmitting}
       >
-        {isSubmitting ? 'Booking...' : 'Book Table'}
+        {bookingStatus === 'confirming' ? (
+          <span className="flex items-center justify-center">
+            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Confirming Booking...
+          </span>
+        ) : (
+          'Book Table'
+        )}
       </button>
 
       {submitMessage && (
-        <p className={`mt-4 text-center ${submitMessage.includes('error') ? 'text-red-600' : 'text-green-600'}`}>
-          {submitMessage}
-        </p>
+        <div className={`mt-4 p-4 rounded-md ${
+          bookingStatus === 'error' ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'
+        }`}>
+          <p className="text-center">{submitMessage}</p>
+        </div>
       )}
     </form>
   );
