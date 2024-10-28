@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
@@ -10,6 +10,16 @@ const BookingForm: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [bookingStatus, setBookingStatus] = useState<'idle' | 'confirming' | 'success' | 'error'>('idle');
   const [submitMessage, setSubmitMessage] = useState('');
+
+  useEffect(() => {
+    if (bookingStatus === 'success') {
+      // Scroll to the top of the booking form container
+      const formContainer = document.querySelector('.booking-form-container');
+      if (formContainer) {
+        formContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  }, [bookingStatus]);
 
   const onSubmit = async (data: any) => {
     setIsSubmitting(true);
@@ -46,7 +56,7 @@ const BookingForm: React.FC = () => {
 
   if (bookingStatus === 'success') {
     return (
-      <div className="text-center py-8">
+      <div className="booking-form-container text-center py-8">
         <div className="mb-6">
           <svg className="mx-auto h-16 w-16 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
@@ -63,6 +73,11 @@ const BookingForm: React.FC = () => {
           onClick={() => {
             setBookingStatus('idle');
             setSubmitMessage('');
+            // Scroll to top of form container when making another booking
+            const formContainer = document.querySelector('.booking-form-container');
+            if (formContainer) {
+              formContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
           }}
           className="bg-burgundy text-white py-2 px-6 rounded-md hover:bg-opacity-90 transition-colors"
         >
@@ -89,7 +104,7 @@ const BookingForm: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="booking-form-container space-y-6">
       <h3 className="text-2xl font-serif font-semibold text-burgundy mb-6">Reserve Your Table</h3>
       
       <div className="mb-4">
