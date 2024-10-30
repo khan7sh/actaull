@@ -7,13 +7,20 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: true,
-    rollupOptions: {
-      external: ['react-error-boundary'],
-      output: {
-        globals: {
-          'react-error-boundary': 'ReactErrorBoundary'
-        }
-      }
+    minify: true,
+    emptyOutDir: true
+  },
+  server: {
+    port: 5173,
+    host: true,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization'
     }
+  },
+  base: '/',
+  optimizeDeps: {
+    include: ['react-error-boundary']
   }
 })

@@ -16,8 +16,26 @@ const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
 const handler: Handler = async (event) => {
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS'
+  };
+
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 200,
+      headers,
+      body: ''
+    };
+  }
+
   if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: JSON.stringify({ error: 'Method Not Allowed' }) };
+    return { 
+      statusCode: 405, 
+      headers,
+      body: JSON.stringify({ error: 'Method Not Allowed' }) 
+    };
   }
 
   try {
@@ -33,13 +51,15 @@ const handler: Handler = async (event) => {
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ message: 'Booking updated successfully' }),
+      headers,
+      body: JSON.stringify({ message: 'Booking updated successfully' })
     };
   } catch (error) {
     console.error('Error updating booking:', error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Failed to update booking' }),
+      headers,
+      body: JSON.stringify({ error: 'Failed to update booking' })
     };
   }
 };
