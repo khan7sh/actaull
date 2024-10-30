@@ -4,7 +4,19 @@ import { getFirebaseDatabase } from './utils/firebase';
 
 const database = getFirebaseDatabase();
 
+interface Booking {
+  id: string;
+  date: string;
+  [key: string]: any;
+}
+
 const handler: Handler = async (event) => {
+  console.log('Function started');
+  console.log('Environment variables:', {
+    databaseURL: process.env.FIREBASE_DATABASE_URL ? 'Set' : 'Not set',
+    apiKey: process.env.FIREBASE_API_KEY ? 'Set' : 'Not set'
+  });
+
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: JSON.stringify({ success: false, message: 'Method Not Allowed' }) };
   }
@@ -26,7 +38,7 @@ const handler: Handler = async (event) => {
     );
 
     const snapshot = await get(bookingsQuery);
-    const bookings = [];
+    const bookings: Booking[] = [];
 
     snapshot.forEach((childSnapshot) => {
       const booking = childSnapshot.val();
