@@ -25,6 +25,7 @@
   from = "/*"
   to = "/index.html"
   status = 200
+  force = true
 
 [dev]
   command = "npm run dev"
