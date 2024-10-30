@@ -1,24 +1,10 @@
 import { Handler } from '@netlify/functions';
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
-import { initializeApp } from 'firebase/app';
-import { getDatabase, ref, push } from 'firebase/database';
+import { ref, push } from 'firebase/database';
+import { getFirebaseDatabase } from './utils/firebase';
 
 dotenv.config();
-
-// Initialize Firebase
-const firebaseConfig = {
-  apiKey: process.env.FIREBASE_API_KEY,
-  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.FIREBASE_PROJECT_ID,
-  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.FIREBASE_APP_ID,
-  databaseURL: process.env.FIREBASE_DATABASE_URL,
-};
-
-const app = initializeApp(firebaseConfig);
-const database = getDatabase(app);
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
@@ -39,7 +25,7 @@ const handler: Handler = async (event) => {
     const bookingData = JSON.parse(event.body || '{}');
     
     // Store booking in Firebase first
-    const bookingsRef = ref(database, 'bookings');
+    const bookingsRef = ref(getFirebaseDatabase(), 'bookings');
     const newBookingRef = await push(bookingsRef, bookingData);
     
     // Create email objects
