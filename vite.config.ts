@@ -6,6 +6,14 @@ export default defineConfig({
   plugins: [react()],
   build: {
     outDir: 'dist',
-    sourcemap: true
+    sourcemap: true,
+    rollupOptions: {
+      external: ['react-error-boundary'],
+      output: {
+        globals: {
+          'react-error-boundary': 'ReactErrorBoundary'
+        }
+      }
+    }
   }
 })
