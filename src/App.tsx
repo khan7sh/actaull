@@ -10,6 +10,7 @@ import MenuPage from './components/MenuPage'
 import AdminLogin from './components/admin/AdminLogin'
 import AdminPanel from './components/admin/AdminPanel'
 import { ErrorBoundary } from 'react-error-boundary'
+import BuildInfo from './components/BuildInfo'
 
 function ErrorFallback({error}) {
   return (
@@ -37,6 +38,7 @@ function App() {
           <Route path="/notin" element={<AdminLogin />} />
           <Route path="/notsiyar" element={<AdminPanel />} />
         </Routes>
+        <BuildInfo />
       </Router>
     </ErrorBoundary>
   )

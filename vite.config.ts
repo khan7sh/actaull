@@ -8,19 +8,22 @@ export default defineConfig({
     outDir: 'dist',
     sourcemap: true,
     minify: true,
-    emptyOutDir: true
+    emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'firebase-vendor': ['firebase/app', 'firebase/database']
+        }
+      }
+    }
   },
   server: {
     port: 5173,
-    host: true,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-    }
+    host: true
   },
   base: '/',
-  optimizeDeps: {
-    include: ['react-error-boundary']
+  define: {
+    'process.env': process.env
   }
 })

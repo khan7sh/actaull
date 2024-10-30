@@ -57,11 +57,16 @@ const handler: Handler = async (event) => {
       // Continue execution even if emails fail
     }
 
+    const headers = {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Headers': 'Content-Type',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Content-Type': 'application/json'
+    };
+
     return {
       statusCode: 200,
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers,
       body: JSON.stringify({ 
         success: true, 
         message: 'Booking confirmed successfully!',
