@@ -6,6 +6,17 @@ let database;
 
 export function getFirebaseApp() {
   try {
+    console.log('Starting Firebase initialization');
+    console.log('Environment check:', {
+      apiKey: process.env.FIREBASE_API_KEY?.slice(0, 4) + '...',
+      databaseURL: process.env.FIREBASE_DATABASE_URL?.slice(0, 10) + '...',
+      projectId: process.env.FIREBASE_PROJECT_ID,
+      hasAuth: !!process.env.FIREBASE_AUTH_DOMAIN,
+      hasStorage: !!process.env.FIREBASE_STORAGE_BUCKET,
+      hasMessaging: !!process.env.FIREBASE_MESSAGING_SENDER_ID,
+      hasAppId: !!process.env.FIREBASE_APP_ID
+    });
+
     if (!app && getApps().length === 0) {
       const firebaseConfig = {
         apiKey: process.env.FIREBASE_API_KEY,

@@ -22,7 +22,7 @@ const handler: Handler = async (event) => {
     );
 
     const snapshot = await get(bookingsQuery);
-    const bookings = [];
+    const bookings: any[] = [];
 
     snapshot.forEach((childSnapshot) => {
       bookings.push(childSnapshot.val());

@@ -12,16 +12,23 @@ interface Booking {
 
 const handler: Handler = async (event) => {
   console.log('Function started');
-  console.log('Environment variables:', {
-    databaseURL: process.env.FIREBASE_DATABASE_URL ? 'Set' : 'Not set',
-    apiKey: process.env.FIREBASE_API_KEY ? 'Set' : 'Not set'
-  });
-
-  if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: JSON.stringify({ success: false, message: 'Method Not Allowed' }) };
-  }
+  
+  // Log all environment variables (sanitized)
+  const envVars = Object.keys(process.env).reduce((acc, key) => {
+    acc[key] = key.includes('KEY') || key.includes('SECRET') ? 'REDACTED' : !!process.env[key];
+    return acc;
+  }, {});
+  console.log('Environment variables:', envVars);
 
   try {
+    // Test Firebase connection
+    const database = getFirebaseDatabase();
+    console.log('Database connection successful');
+    
+    if (event.httpMethod !== 'POST') {
+      return { statusCode: 405, body: JSON.stringify({ success: false, message: 'Method Not Allowed' }) };
+    }
+
     const { date } = JSON.parse(event.body || '{}');
     const selectedDate = new Date(date);
     const startOfDay = new Date(Date.UTC(selectedDate.getUTCFullYear(), selectedDate.getUTCMonth(), selectedDate.getUTCDate()));

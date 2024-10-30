@@ -12,7 +12,7 @@ import AdminPanel from './components/admin/AdminPanel'
 import { ErrorBoundary } from 'react-error-boundary'
 import BuildInfo from './components/BuildInfo'
 
-function ErrorFallback({error}) {
+function ErrorFallback({error}: {error: Error}) {
   return (
     <div className="min-h-screen bg-cream flex items-center justify-center p-4">
       <div className="bg-white p-8 rounded-lg shadow-lg max-w-lg">

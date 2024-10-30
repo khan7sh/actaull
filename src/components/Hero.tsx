@@ -1,6 +1,6 @@
 import React from 'react'
 import heroImage from '../assets/hero_image.jpg'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 const Hero: React.FC = () => {
   const navigate = useNavigate();
