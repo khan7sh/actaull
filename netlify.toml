@@ -51,3 +51,15 @@ package = "@netlify/plugin-functions-install-core"
     Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
     Access-Control-Allow-Headers = "Content-Type, Authorization"
     Content-Security-Policy = "default-src 'self' https: 'unsafe-inline' 'unsafe-eval'; connect-src 'self' https: wss:; img-src 'self' https: data:; font-src 'self' https: data:;"
+
+[[redirects]]
+  from = "www.noshecambridge.co.uk/*"
+  to = "https://noshecambridge.co.uk/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "http://*"
+  to = "https://:splat"
+  status = 301
+  force = true
