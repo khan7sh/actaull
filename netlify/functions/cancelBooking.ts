@@ -9,7 +9,7 @@ const firebaseConfig = {
   storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.FIREBASE_APP_ID,
-  databaseURL: "https://bookings-f964e-default-rtdb.europe-west1.firebasedatabase.app",
+  databaseURL: process.env.FIREBASE_DATABASE_URL,
 };
 
 const app = initializeApp(firebaseConfig);
